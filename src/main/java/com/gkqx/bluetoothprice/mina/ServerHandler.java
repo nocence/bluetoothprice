@@ -127,30 +127,44 @@ public class ServerHandler extends IoHandlerAdapter {
             }
         }
 
-        //定义布尔值用来判定超时
+        //定义布尔值用来判定发送图片后第一次接收到响应是否超时
         boolean flag = true;
         if(session.getAttribute("beginTime")!=null){
             long nowTime = System.currentTimeMillis();
             long beginTime = (long) session.getAttribute("beginTime");
             if ((nowTime-beginTime)>1000*10)flag=false;
+            //判定之后把session移除，否则beginTime一直存在，当发送总时长超过规定时间，剩下的数据就发送不了
+            session.removeAttribute("beginTime");
         }
 
         if(stringHex.equals("OK")&& flag==true){// 收到OK报文 持续发送图片
             System.out.println("收到客户端OK消息，继续发送图片......");
-            SessionMap sessionMap = SessionMap.newInstance();
-            // 从缓存池获取对应会话待发送图片
-            Images sendImg = ImagesCachePool.getImages(session.getId());
-            // 获取实际发送数据大小
-            byte[] snedBytes = ByteUtil.queueOutByte(sendImg.getImgQueue(), sendImg.getSize());
-            if( snedBytes.length > 0) {
-                sessionMap.sendMsgToOne(sendImg.getWifiIP(), IoBuffer.wrap(snedBytes));
-            }else {// 图片发送完成
-                // 清除缓存
-                ImagesCachePool.removeImages( sendImg.getSessionID() );
-                // 发送成功之后存入成功标识符，给发请请求的controller判定是否发送成功
-                session.setAttribute("successCode","succeed");
-                // 返回报文
-                sessionMap.sendMsgToOne(sendImg.getWifiIP(), IoBuffer.wrap("serverOK".getBytes()));
+            //这里判定从第二次收到响应之后，有没有超时
+            long lastTime = System.currentTimeMillis();
+            boolean isSend = true;
+            if (session.getAttribute("secondeTime")!=null){
+                long secondeTime = (Long)session.getAttribute("secondeTime");
+                if ((secondeTime-lastTime)>1000*10)isSend=false;
+            }
+            if (isSend==true){
+                SessionMap sessionMap = SessionMap.newInstance();
+                // 从缓存池获取对应会话待发送图片
+                Images sendImg = ImagesCachePool.getImages(session.getId());
+                // 获取实际发送数据大小
+                byte[] snedBytes = ByteUtil.queueOutByte(sendImg.getImgQueue(), sendImg.getSize());
+                if( snedBytes.length > 0) {
+                    sessionMap.sendMsgToOne(sendImg.getWifiIP(), IoBuffer.wrap(snedBytes));
+                    session.setAttribute("secondTime",System.currentTimeMillis());
+                }else {// 图片发送完成
+                    // 清除缓存
+                    ImagesCachePool.removeImages( sendImg.getSessionID() );
+                    // 发送成功之后存入成功标识符，给发请请求的controller判定是否发送成功
+                    session.setAttribute("successCode","succeed");
+                    // 返回报文
+                    sessionMap.sendMsgToOne(sendImg.getWifiIP(), IoBuffer.wrap("serverOK".getBytes()));
+                }
+            }else {
+                session.setAttribute("successCode","failed");
             }
         }else{
             session.setAttribute("successCode","failed");

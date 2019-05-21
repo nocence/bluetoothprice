@@ -237,7 +237,7 @@ public class ByteUtil {
 
     public static void main(String[] args) throws FileNotFoundException {
         ByteUtil byteUtil = new ByteUtil();
-        String s = byteUtil.toStringHex("4d41433a303031353139322e3136382e3132352e3131314749443a303030305049583a303030373231322a313034");
+        String s = byteUtil.toStringHex("7365727665724F4B");
         System.out.println(s);
         int i = Integer.parseInt("000012");
         System.out.println(i);
