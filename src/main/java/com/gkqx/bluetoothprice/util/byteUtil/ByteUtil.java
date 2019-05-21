@@ -66,6 +66,7 @@ public class ByteUtil {
     /**
      * 字节重组成队列
      * @param bytes
+     * @param size
      * @return
      */
     public static Queue<Byte> bytes2Queue(byte[] bytes) {
@@ -79,7 +80,6 @@ public class ByteUtil {
     /**
      * 队列按照字节大小出列，
      * @param bytes
-     * @param size
      * @return
      */
     public static byte[] queueOutByte(Queue<Byte> queue, int size) {
@@ -237,9 +237,10 @@ public class ByteUtil {
 
     public static void main(String[] args) throws FileNotFoundException {
         ByteUtil byteUtil = new ByteUtil();
-        String s = byteUtil.toStringHex("7365727665724F4B");
+        String s = byteUtil.toStringHex("4d41433a303031353139322e3136382e3132352e3131314749443a303030305049583a303030373231322a313034");
         System.out.println(s);
-
+        int i = Integer.parseInt("000012");
+        System.out.println(i);
 //        //获取第一段消息的长度
 //        int i = Integer.parseInt(s.substring(SHORT_LENGTH, COMBINATION_LENGTH));
 //        System.out.println("第一消息长度："+i);

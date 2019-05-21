@@ -10,7 +10,6 @@ package com.gkqx.bluetoothprice.mina;
 import javax.annotation.PostConstruct;
 
 import com.gkqx.bluetoothprice.cache.ImagesCachePool;
-import com.gkqx.bluetoothprice.common.socketComon.SocketCommon;
 import com.gkqx.bluetoothprice.model.Images;
 import com.gkqx.bluetoothprice.model.Tags;
 import com.gkqx.bluetoothprice.model.Wifis;
@@ -30,8 +29,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 
-import static com.gkqx.bluetoothprice.common.socketComon.SocketCommon.COMBINATION_LENGTH;
-import static com.gkqx.bluetoothprice.common.socketComon.SocketCommon.SHORT_LENGTH;
+import static com.gkqx.bluetoothprice.common.socketComon.SocketCommon.*;
 
 
 @Component
@@ -86,7 +84,7 @@ public class ServerHandler extends IoHandlerAdapter {
         //收到消息之后，先将消息转化成字符串
         //判断消息内容，如果包含与硬件端约定的标识符，则调用service进行对应的操作
         String stringHex = util.toStringHex(temp);
-        if(stringHex.contains(SocketCommon.MAC) && stringHex.contains(SocketCommon.GID) && stringHex.contains(SocketCommon.PIX)){
+        if(stringHex.contains(MAC) && stringHex.contains(GID) && stringHex.contains(PIX)){
             //判断价签信息是否已经存在
             //获取消息里面的mac地址
             int i = Integer.parseInt(stringHex.substring(SHORT_LENGTH, COMBINATION_LENGTH));
