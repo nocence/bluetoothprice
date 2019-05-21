@@ -141,12 +141,18 @@ public class ServerHandler extends IoHandlerAdapter {
             System.out.println("收到客户端OK消息，继续发送图片......");
             //这里判定从第二次收到响应之后，有没有超时
             long lastTime = System.currentTimeMillis();
-            boolean isSend = true;
-            if (session.getAttribute("secondeTime")!=null){
-                long secondeTime = (Long)session.getAttribute("secondeTime");
-                if ((secondeTime-lastTime)>1000*10)isSend=false;
+            boolean isSend = false;
+            if (session.getAttribute("secondTime")!=null){
+                long secondTime = (Long)session.getAttribute("secondTime");
+                if ((lastTime-secondTime)>1000*10){
+                    isSend=false;
+                }else{
+                    isSend=true;
+                }
             }
-            if (isSend==true){
+            if (isSend==true ||session.getAttribute("secondTime")==null){
+                //如果session存了值，要清空，否则上面的超时判断会一直为false
+                if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
                 SessionMap sessionMap = SessionMap.newInstance();
                 // 从缓存池获取对应会话待发送图片
                 Images sendImg = ImagesCachePool.getImages(session.getId());

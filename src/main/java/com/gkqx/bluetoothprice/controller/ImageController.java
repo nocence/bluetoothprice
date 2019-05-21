@@ -214,6 +214,7 @@ public class ImageController {
         }else {
             res.setCode(ResultCommon.FAILED_CODE);
         }
+        System.out.println("发送图片的成败标识符："+res.getCode());
         return res;
     }
 }
