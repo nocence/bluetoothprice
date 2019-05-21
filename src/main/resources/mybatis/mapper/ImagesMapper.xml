@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gkqx.bluetoothprice.mapper.ImagesMapper">
+    <!--插入图片信息-->
+    <insert id="insertImageInfomation" parameterType="com.gkqx.bluetoothprice.model.Images" useGeneratedKeys="true" keyProperty="imgId">
+        insert into images (
+            img_name,img_path,goods_id
+        )
+        values (
+            #{imgName},#{imgPath},#{goodsId}
+        )
+    </insert>
+    <!--遍历所有图片-->
+    <select id="getAllImages" resultType="com.gkqx.bluetoothprice.model.GoodsImages">
+        select g.goods_name goodsName,g.goods_specs goodsSpecs,
+            g.goods_unit goodsUnit,i.img_name imageName,i.img_path imageUrl
+        from goods g join images i on g.goods_id=i.goods_id
+        where 1=1
+        <if test="goods.goodsName!=null and goods.goodsName!=''">
+            and g.goods_name = #{goods.goodsName}
+        </if>
+        <if test="goods.goodsSpecs !=null and goods.goodsSpecs!=''">
+            and g.goods_specs = #{goods.goodsSpecs}
+        </if>
+        <if test="images.imgName !=null and images.imgName !=''">
+            and i.img_name #{images.imgName}
+        </if>
+    </select>
+    <!--根据图片名查询单张图片,主要是为了拿到图片路径进行发送-->
+    <select id="getImage" resultType="com.gkqx.bluetoothprice.model.Images">
+        select img_id imgId,img_name imgName,img_path imgPath,goods_id goodsId
+         from images where img_name = #{imgName}
+    </select>
+</mapper>

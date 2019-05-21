@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gkqx.bluetoothprice.mapper.ImgInfoMapper">
+    <!--将图片信息插入数据库-->
+    <insert id="insertImgInfo" parameterType="com.gkqx.bluetoothprice.model.ImgInfo" useGeneratedKeys="true" keyProperty="imgId">
+        insert into images_info (
+            img_name,img_title,img_unit,img_specs,img_place,img_code,img_price,img_barcode,img_tell,img_path
+        ) values (
+            #{imgInfo.name},#{imgInfo.title},#{imgInfo.unit},#{imgInfo.specs},#{imgInfo.place},#{imgInfo.code},#{imgInfo.price},
+            #{imgInfo.barcode},#{imgInfo.tellphone},#{imgInfo.path}
+        )
+    </insert>
+    <!--按条件从数据库查出图片信息-->
+    <select id="queryImg" resultType="com.gkqx.bluetoothprice.model.ImgInfo">
+        select img_name name,img_title title,img_unit unit,img_specs specs,img_place place,img_code code,img_price price,
+            img_barcode barcode, img_tell tellphone,img_path path
+        from images_info
+        where 1
+        <if test="imgInfo.name != null">
+            and img_name = #{imgInfo.name}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gkqx.bluetoothprice.mapper.StoreMapper">
+    <!--添加门店信息-->
+    <insert id="addStore" parameterType="com.gkqx.bluetoothprice.model.Store" keyProperty="storeId" useGeneratedKeys="true">
+        insert into stores (
+            store_name,store_province,store_urban,store_address
+        ) values (
+            #{storeName},#{storeProvince},#{storeUrban},#{storeAddress}
+        )
+    </insert>
+    <!--查询门店列表-->
+    <select id="getAllStores" resultType="com.gkqx.bluetoothprice.model.Store">
+        select store_id storeId,store_name storeName,store_province storeProvince,store_urban storeUrban,store_address storeAddress
+        from stores
+        where 1=1
+        <if test="storeName != null and storeName !=''">
+            and store_name = #{storeName}
+        </if>
+        <if test="storeProvince != null and storeProvince != ''">
+            and store_province = #{storeProvince}
+        </if>
+        <if test="storeUrban != null and storeUrban !=''">
+            and store_urban = #{storeUrban}
+        </if>
+    </select>
+</mapper>

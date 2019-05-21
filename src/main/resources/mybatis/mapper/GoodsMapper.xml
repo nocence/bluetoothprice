@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gkqx.bluetoothprice.mapper.GoodsMapper">
+    <!--添加商品信息-->
+    <insert id="addGoodsInfo" parameterType="com.gkqx.bluetoothprice.model.Goods" useGeneratedKeys="true" >
+        insert into goods (
+            goods_name,goods_specs,goods_unit,goods_place,goods_code,goods_price,goods_barcode,goods_tell
+        )values (
+            #{goodsName},#{goodsSpecs},#{goodsUnit},#{goodsPlace},#{goodsCode},#{goodsPrice},#{goodsBarcode},#{goodsTell}
+        )
+    </insert>
+    <!--查询所有商品信息-->
+    <select id="getAllGoods" resultType="com.gkqx.bluetoothprice.model.Goods">
+        select goods_name goodsName,goods_specs goodsSpecs,goods_unit goodsUnit,goods_place goodsPlace,goods_code goodsCode,
+                goods_price goodsPrice,goods_barcode goodsBarcode,goods_tell goodsTell
+        from goods
+        where 1=1
+        <if test="goodsName !=null and goodsName!=''">
+            and goods_name = #{goodsName}
+        </if>
+        <if test="goodsSpecs !=null and goodsSpecs!=''">
+            and goods_specs = #{goodsSpecs}
+        </if>
+        <if test="goodsPlace !=null and goodsPlace !=''">
+            and goods_place = #{goodsPlace}
+        </if>
+    </select>
+    <!--根据商品名和规格获取某件商品实体-->
+    <select id="getOneGoodsByNameAndSpces" resultType="com.gkqx.bluetoothprice.model.Goods">
+        select goods_id goodsId,goods_name goodsName,goods_specs goodsSpecs,goods_unit goodsUnit,goods_place goodsPlace,goods_code goodsCode,
+        goods_price goodsPrice,goods_barcode goodsBarcode,goods_tell goodsTell
+        from goods
+        where 1=1
+        <if test="goodsName !=null and goodsName!=''">
+            and goods_name = #{goodsName}
+        </if>
+        <if test="goodsSpecs !=null and goodsSpecs!=''">
+            and goods_specs = #{goodsSpecs}
+        </if>
+    </select>
+</mapper>

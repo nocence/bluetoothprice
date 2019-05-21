@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gkqx.bluetoothprice.mapper.TagsMapper">
+    <!--插入tags信息-->
+    <insert id="insertTag" parameterType="com.gkqx.bluetoothprice.model.Tags" useGeneratedKeys="true" keyProperty="tagId">
+        insert into tags(
+            wifi_id,goods_id,mac_address,picpx,type
+        )values (
+            #{wifiId},#{goodsId},#{macAddress},#{picPx},#{type}
+        )
+    </insert>
+    <!--查询单个价签-->
+    <select id="getOneTagByMacAddress" parameterType="com.gkqx.bluetoothprice.model.Tags" resultType="com.gkqx.bluetoothprice.model.Tags">
+        select * from tags where mac_address = #{macAddress}
+    </select>
+    <!--查询所有价签并提供给前端显示-->
+    <select id="getAllTagsToFont" parameterType="com.gkqx.bluetoothprice.model.FontTag" resultType="com.gkqx.bluetoothprice.model.FontTag">
+        select t.mac_address macAddress,s.store_name storeName,w.wifi_ip wifiIp,g.goods_name goodsName,g.goods_price goodsPrice,g.goods_specs goodsSpecs,g.goods_unit goodsUnit,t.type TYPE
+        from tags t
+        join wifis w on t.wifi_id = w.wifi_id
+        join stores s on w.store_id = s.store_id
+        join goods g on t.goods_id = g.goods_id
+        where 1=1
+        <if test="storeName!=null and storeName!=''">
+            and s.store_name = #{storeName}
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            and g.goods_name = #{goodsName}
+        </if>
+    </select>
+</mapper>

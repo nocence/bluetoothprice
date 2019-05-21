@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gkqx.bluetoothprice.mapper.WifisMapper">
+    <!--插入WiFi信息-->
+    <insert id="addWifi" parameterType="com.gkqx.bluetoothprice.model.Wifis" keyProperty="wifiId" useGeneratedKeys="true">
+        insert into wifis(
+            wifi_ip,store_id,type
+        ) values (
+            #{wifiIp},#{storeId},#{type}
+        )
+    </insert>
+    <!--查询所有WiFi，查询条件暂时为门店名和wifi的ip-->
+    <select id="getAllWifis" parameterType="com.gkqx.bluetoothprice.model.StoreWifis" resultType="com.gkqx.bluetoothprice.model.StoreWifis">
+    select w.store_id storeId,s.store_name storeName,w.wifi_id wifiId, w.wifi_ip wifiIp,w.type type
+    from wifis w join stores s on w.store_id = s.store_id
+    where 1=1
+    <if test="storeName!=null and storeName!=''">
+        and s.store_name = #{storeName}
+    </if>
+    <if test="wifiIp != null and wifiIp!=''">
+        and w.wifi_ip = #{wifiIp}
+    </if>
+</select>
+    <!--根据wifiip获取wifi-->
+    <select id="getOneByWifisIp" parameterType="com.gkqx.bluetoothprice.model.Wifis" resultType="com.gkqx.bluetoothprice.model.Wifis">
+        select wifi_id wifiId,wifi_ip wifiIp,store_id storeId,type type from wifis where wifi_ip = #{wifiIp}
+    </select>
+</mapper>
