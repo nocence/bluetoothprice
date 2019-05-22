@@ -161,7 +161,7 @@ public class ImageController {
         return res;
     }
     /**
-    * 根据WiFiIP获取其管理的所有价签
+    * 根据WiFiIP获取其管理的所有使用中的价签
     * @author Innocence
     * @date 2019/5/22 002214:51
     * @param
@@ -198,7 +198,7 @@ public class ImageController {
         Images image = imagesService.getImage(images);
         System.out.println("获取图片路径："+image.getImgPath());
         AllMsg msg = new AllMsg();
-        byte[] hex = msg.hex(image.getImgPath());
+        byte[] hex = msg.hex(image.getImgPath(),imageToWifi.getMacAddress());
 
         SessionMap sessionMap = SessionMap.newInstance();
         IoSession session = sessionMap.getSession(imageToWifi.getWifiIp());

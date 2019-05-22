@@ -37,5 +37,6 @@
         <if test="wifiIp!=null and wifiIp != ''">
             and w.wifi_ip =#{wifiIp}
         </if>
+        and t.type = 1;
     </select>
 </mapper>

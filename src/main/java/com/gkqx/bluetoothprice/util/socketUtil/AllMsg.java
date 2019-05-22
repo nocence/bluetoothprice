@@ -17,7 +17,7 @@ import java.util.List;
  * @Version 1.0
  **/
 public class AllMsg {
-    public byte[] hex(String filePath) throws FileNotFoundException {
+    public byte[] hex(String filePath,String macAddress) throws FileNotFoundException {
         ArrayList<byte[]> list = new ArrayList<>();
         //获取图片的点阵数据
         byte[] bytes = new ImageToHex().toHex(filePath);
@@ -28,6 +28,8 @@ public class AllMsg {
         for (int i=0;i<splitBytes.length;i++){
             //流开头的标识符
             byte[] img = "IMG:".getBytes();
+            //mac地址
+            byte[] mac = macAddress.getBytes();
             //切割成的流的大小
             int length = splitBytes[i].length;
             String num = null;
@@ -51,6 +53,7 @@ public class AllMsg {
             }
             byte[] stringNumBytes = stringNum.getBytes();
             list.add(img);
+            list.add(mac);
             list.add(numBytes);
             list.add(stringNumBytes);
             list.add(splitBytes[i]);
