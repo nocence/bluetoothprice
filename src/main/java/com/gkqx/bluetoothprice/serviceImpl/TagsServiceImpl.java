@@ -32,4 +32,9 @@ public class TagsServiceImpl implements TagsService {
     public List<FontTag> getAllTagsToFont(FontTag fontTag) {
         return tagsMapper.getAllTagsToFont(fontTag);
     }
+
+    @Override
+    public List<Tags> getAllTags(String  wifiIp) {
+        return tagsMapper.getAllTags(wifiIp);
+    }
 }

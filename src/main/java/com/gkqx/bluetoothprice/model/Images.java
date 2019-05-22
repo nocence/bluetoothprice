@@ -34,7 +34,7 @@ public class Images {
     private String imgPath;
 
     //关联的商品id
-    private Integer goodsId;
+    private String goodsId;
     
     
     public Images() {}
@@ -69,11 +69,11 @@ public class Images {
         this.imgPath = imgPath;
     }
 
-    public Integer getGoodsId() {
+    public String getGoodsId() {
         return goodsId;
     }
 
-    public void setGoodsId(Integer goodsId) {
+    public void setGoodsId(String goodsId) {
         this.goodsId = goodsId;
     }
 

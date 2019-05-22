@@ -9,7 +9,7 @@ package com.gkqx.bluetoothprice.model;
  **/
 public class Goods {
 
-    private Integer goodsId;
+    private String goodsId;
 
     private String goodsName;
 
@@ -33,11 +33,11 @@ public class Goods {
     //厂家电话
     private String goodsTell;
 
-    public Integer getGoodsId() {
+    public String getGoodsId() {
         return goodsId;
     }
 
-    public void setGoodsId(Integer goodsId) {
+    public void setGoodsId(String goodsId) {
         this.goodsId = goodsId;
     }
 

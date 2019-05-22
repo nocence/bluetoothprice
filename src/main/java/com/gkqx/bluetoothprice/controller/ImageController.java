@@ -7,10 +7,7 @@ import com.gkqx.bluetoothprice.dto.Result;
 import com.gkqx.bluetoothprice.mina.ServerHandler;
 import com.gkqx.bluetoothprice.mina.SessionMap;
 import com.gkqx.bluetoothprice.model.*;
-import com.gkqx.bluetoothprice.service.GoodsService;
-import com.gkqx.bluetoothprice.service.ImagesService;
-import com.gkqx.bluetoothprice.service.StoreService;
-import com.gkqx.bluetoothprice.service.WifisService;
+import com.gkqx.bluetoothprice.service.*;
 import com.gkqx.bluetoothprice.util.byteUtil.ByteUtil;
 import com.gkqx.bluetoothprice.util.fileUtil.FileUtil;
 import com.gkqx.bluetoothprice.util.imgUtil.DrawImg;
@@ -54,8 +51,9 @@ public class ImageController {
 
     @Autowired
     private WifisService wifisService;
-    private java.lang.Object Object;
 
+    @Autowired
+    private TagsService tagsService;
     /**
     * 处理生成图片的请求
     * @author Innocence
@@ -152,11 +150,32 @@ public class ImageController {
     @ResponseBody
     public Result getAllWifis(StoreWifis storeWifis){
         Result res = new Result();
+
         List<StoreWifis> allWifis = wifisService.getAllWifis(storeWifis);
         if(!allWifis.isEmpty()){
             res.setCode(ResultCommon.SUCCESS_CODE);
             res.setList(allWifis);
         }else{
+            res.setCode(ResultCommon.FAILED_CODE);
+        }
+        return res;
+    }
+    /**
+    * 根据WiFiIP获取其管理的所有价签
+    * @author Innocence
+    * @date 2019/5/22 002214:51
+    * @param
+    * @return
+    */
+    @RequestMapping("getAllTags")
+    @ResponseBody
+    public Result getAllTags(String wifiIp){
+        Result res = new Result();
+        List<Tags> allTags = tagsService.getAllTags(wifiIp);
+        if (!allTags.isEmpty()){
+            res.setCode(ResultCommon.SUCCESS_CODE);
+            res.setList(allTags);
+        }else {
             res.setCode(ResultCommon.FAILED_CODE);
         }
         return res;

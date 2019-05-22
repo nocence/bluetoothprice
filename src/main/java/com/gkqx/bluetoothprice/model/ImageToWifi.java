@@ -13,6 +13,8 @@ public class ImageToWifi {
 
     private String wifiIp;
 
+    private String macAddress;
+
     public String getImageName() {
         return imageName;
     }
@@ -27,5 +29,13 @@ public class ImageToWifi {
 
     public void setWifiIp(String wifiIp) {
         this.wifiIp = wifiIp;
+    }
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
     }
 }

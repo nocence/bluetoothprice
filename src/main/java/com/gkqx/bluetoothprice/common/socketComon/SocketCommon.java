@@ -22,15 +22,28 @@ public class SocketCommon {
     * @author Innocence
     * @date 2019/5/14 001416:05
     */
-    public static final int SHORT_LENGTH = 4;
+    public static final int SIGN_LENGTH = 4;
 
     /**
-    * 与硬件端约定的每个固定标识符长度和标识内容长度的和
+    * 与硬件端约定的MAC地址的长度
     * @author Innocence
     * @date 2019/5/14 001416:05
     */
-    public static final int COMBINATION_LENGTH = 8;
+    public static final int MAC_DATA_LENGTH = 12;
 
+    /**
+    * 与硬件端约定的商品ID的长度
+    * @author Innocence
+    * @date 2019/5/22 002210:21
+    */
+    public static final int PID_DATA_LENGTH = 32;
+
+    /**
+    * 如果价签第一次连上来，商品Id是没有的，所以是32个0的字符串
+    * @author Innocence
+    * @date 2019/5/22 002211:21
+    */
+    public static final String INIT_PID = "00000000000000000000000000000000";
     /**
     * 与硬件端约定的标识MAC地址的标识符
     * @author Innocence
@@ -43,7 +56,7 @@ public class SocketCommon {
     * @author Innocence
     * @date 2019/5/14 001416:06
     */
-    public static final String GID = "GID:";
+    public static final String PID = "PID:";
 
     /**
     * 与硬件端约定的标识图片像素的标识符

@@ -28,6 +28,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
+import java.util.regex.Pattern;
 
 import static com.gkqx.bluetoothprice.common.socketComon.SocketCommon.*;
 
@@ -84,11 +85,10 @@ public class ServerHandler extends IoHandlerAdapter {
         //收到消息之后，先将消息转化成字符串
         //判断消息内容，如果包含与硬件端约定的标识符，则调用service进行对应的操作
         String stringHex = util.toStringHex(temp);
-        if(stringHex.contains(MAC) && stringHex.contains(GID) && stringHex.contains(PIX)){
+        if(stringHex.contains(MAC) && stringHex.contains(PID) && stringHex.contains(PIX)){
             //判断价签信息是否已经存在
             //获取消息里面的mac地址
-            int i = Integer.parseInt(stringHex.substring(SHORT_LENGTH, COMBINATION_LENGTH));
-            String macAddress = stringHex.substring(COMBINATION_LENGTH, COMBINATION_LENGTH + i);
+            String macAddress = stringHex.substring(SIGN_LENGTH, SIGN_LENGTH+MAC_DATA_LENGTH);
             Tags tags = new Tags();
             tags.setMacAddress(macAddress);
             Tags oneTagByMacAddress = serverHandler.tagsService.getOneTagByMacAddress(tags);
@@ -100,18 +100,18 @@ public class ServerHandler extends IoHandlerAdapter {
                 //将获取到的wifiid赋值给tags实体
                 tags.setWifiId(oneByWifisIp.getWifiId());
                 //获取消息里的商品id
-                int i2 = Integer.parseInt(stringHex.substring( COMBINATION_LENGTH + SHORT_LENGTH + i,COMBINATION_LENGTH+SHORT_LENGTH*2+i));
-                String goodsInitId = stringHex.substring(COMBINATION_LENGTH + SHORT_LENGTH * 2 + i, COMBINATION_LENGTH + SHORT_LENGTH * 2 + i + i2);
-                int goodsId ;
+                String goodsInitId = stringHex.substring(SIGN_LENGTH*2+MAC_DATA_LENGTH, SIGN_LENGTH*2+MAC_DATA_LENGTH+PID_DATA_LENGTH);
+                String goodsId ;
                 //价签第一次连上的时候可能没有商品id，所以要判定,i2==0,说明没有商品id的信息内容
-                if(i2==0){
-                    goodsId = 0;
+
+                if(goodsInitId.equals(INIT_PID)){
+                    goodsId = null;
                 }else {
-                    goodsId = Integer.parseInt(goodsInitId);
+                    goodsId = goodsInitId;
                 }
                 tags.setGoodsId(goodsId);
                 //获取消息里的像素信息
-                String picpx = stringHex.substring(COMBINATION_LENGTH+SHORT_LENGTH*4+ i + i2);
+                String picpx = stringHex.substring(SIGN_LENGTH*3+MAC_DATA_LENGTH+PID_DATA_LENGTH);
                 tags.setPicPx(picpx);
                 //type默认设置为1，表示在使用
                 tags.setType(1);

@@ -1,15 +1,14 @@
 package com.gkqx.bluetoothprice.util.byteUtil;
 
-import com.gkqx.bluetoothprice.util.socketUtil.AllMsg;
-
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Pattern;
 
-import static com.gkqx.bluetoothprice.common.socketComon.SocketCommon.COMBINATION_LENGTH;
-import static com.gkqx.bluetoothprice.common.socketComon.SocketCommon.SHORT_LENGTH;
+import static com.gkqx.bluetoothprice.common.socketComon.SocketCommon.*;
+
 
 /**
  * 读取文件流之后对byte数组的处理方法
@@ -66,7 +65,6 @@ public class ByteUtil {
     /**
      * 字节重组成队列
      * @param bytes
-     * @param size
      * @return
      */
     public static Queue<Byte> bytes2Queue(byte[] bytes) {
@@ -79,7 +77,8 @@ public class ByteUtil {
 
     /**
      * 队列按照字节大小出列，
-     * @param bytes
+     * @param queue
+     * @param size
      * @return
      */
     public static byte[] queueOutByte(Queue<Byte> queue, int size) {
@@ -237,28 +236,25 @@ public class ByteUtil {
 
     public static void main(String[] args) throws FileNotFoundException {
         ByteUtil byteUtil = new ByteUtil();
-        String s = byteUtil.toStringHex("7365727665724F4B");
-        System.out.println(s);
-        int i = Integer.parseInt("000012");
-        System.out.println(i);
-//        //获取第一段消息的长度
-//        int i = Integer.parseInt(s.substring(SHORT_LENGTH, COMBINATION_LENGTH));
-//        System.out.println("第一消息长度："+i);
-//        //根据得到的消息长度截取第一段信息
-//        String s1 = s.substring(COMBINATION_LENGTH, COMBINATION_LENGTH + i);
-//        System.out.println("第一段消息："+s1);
-//        //获取第二段消息的长度
-//        int i2 = Integer.parseInt(s.substring( COMBINATION_LENGTH + SHORT_LENGTH + i,COMBINATION_LENGTH+SHORT_LENGTH*2+i));
-//        System.out.println("第二消息长度："+i2);
-//        String s2 = s.substring(COMBINATION_LENGTH+SHORT_LENGTH*2+i, COMBINATION_LENGTH+SHORT_LENGTH*2+i+i2);
-//        System.out.println("第二段消息："+s2);
-//        System.out.println(s2.equals(""));
-//        //获取第三段消息长度
-//        int i3 = Integer.parseInt(s.substring(COMBINATION_LENGTH+SHORT_LENGTH*3+i + i2,COMBINATION_LENGTH+SHORT_LENGTH*4+i + i2));
-//        System.out.println("第三段消息长度："+i3);
-//        String s3 = s.substring(COMBINATION_LENGTH+SHORT_LENGTH*4+ i + i2);
-//        //第三段消息
-//        System.out.println("第三段消息："+s3);
+//        String s = byteUtil.toStringHex("7365727665724F4B");
+//        System.out.println(s);
+//        int i = Integer.parseInt("000012");
+//        System.out.println(i);00000000000000000000000000000000    01234567890123456789012345678910
+        String s = "MAC:6A9208A6C13BPID:00000000000000000000000000000000PIX:250*122";
+        Pattern pattern = Pattern.compile("[0-9]*");
+
+        //根据得到的消息长度截取第一段信息
+        String s1 = s.substring(SIGN_LENGTH, SIGN_LENGTH+MAC_DATA_LENGTH);
+        System.out.println("第一段消息："+s1);
+        //获取第二段消息的长度
+        String s2 = s.substring(SIGN_LENGTH*2+MAC_DATA_LENGTH, SIGN_LENGTH*2+MAC_DATA_LENGTH+PID_DATA_LENGTH);
+        System.out.println("第二段消息："+s2);
+        boolean matches = pattern.matcher(s).matches();
+        System.out.println(matches);
+        //获取第三段消息长度
+        String s3 = s.substring(SIGN_LENGTH*3+MAC_DATA_LENGTH+PID_DATA_LENGTH);
+        //第三段消息
+        System.out.println("第三段消息："+s3);
 //        //测试数据切割
 //        AllMsg allMsg = new AllMsg();
 //        byte[] hex = allMsg.hex("F:\\LymTools\\bluetoothprice\\src\\main\\resources\\static\\images\\ca5102a20a634c23b343fd13b3b9dc3a.bmp");

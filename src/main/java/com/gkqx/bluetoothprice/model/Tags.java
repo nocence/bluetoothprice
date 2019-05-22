@@ -13,7 +13,7 @@ public class Tags {
 
     private Integer wifiId;
 
-    private Integer goodsId;
+    private String goodsId;
 
     //价签的mac地址
     private String macAddress;
@@ -39,11 +39,11 @@ public class Tags {
         this.wifiId = wifiId;
     }
 
-    public Integer getGoodsId() {
+    public String getGoodsId() {
         return goodsId;
     }
 
-    public void setGoodsId(Integer goodsId) {
+    public void setGoodsId(String goodsId) {
         this.goodsId = goodsId;
     }
 

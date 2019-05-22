@@ -4,9 +4,9 @@
     <!--添加商品信息-->
     <insert id="addGoodsInfo" parameterType="com.gkqx.bluetoothprice.model.Goods" useGeneratedKeys="true" >
         insert into goods (
-            goods_name,goods_specs,goods_unit,goods_place,goods_code,goods_price,goods_barcode,goods_tell
+            goods_id,goods_name,goods_specs,goods_unit,goods_place,goods_code,goods_price,goods_barcode,goods_tell
         )values (
-            #{goodsName},#{goodsSpecs},#{goodsUnit},#{goodsPlace},#{goodsCode},#{goodsPrice},#{goodsBarcode},#{goodsTell}
+           #{goodsId}, #{goodsName},#{goodsSpecs},#{goodsUnit},#{goodsPlace},#{goodsCode},#{goodsPrice},#{goodsBarcode},#{goodsTell}
         )
     </insert>
     <!--查询所有商品信息-->

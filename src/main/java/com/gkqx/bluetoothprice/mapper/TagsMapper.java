@@ -3,6 +3,7 @@ package com.gkqx.bluetoothprice.mapper;
 import com.gkqx.bluetoothprice.model.FontTag;
 import com.gkqx.bluetoothprice.model.Tags;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -14,4 +15,6 @@ public interface TagsMapper {
     Tags getOneTagByMacAddress(Tags tags);
 
     List<FontTag> getAllTagsToFont(FontTag fontTag);
+
+    List<Tags> getAllTags(@Param("wifiIp") String  wifiIp);
 }

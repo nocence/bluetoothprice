@@ -13,4 +13,5 @@ public interface TagsService {
 
     List<FontTag> getAllTagsToFont(FontTag fontTag);
 
+    List<Tags> getAllTags(String wifiIp);
 }

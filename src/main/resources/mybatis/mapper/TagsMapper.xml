@@ -28,4 +28,14 @@
             and g.goods_name = #{goodsName}
         </if>
     </select>
+    <!--前端发送图片时需要获取价签，以便获取MAC地址-->
+    <select id="getAllTags" parameterType="String" resultType="com.gkqx.bluetoothprice.model.Tags">
+        select t.tag_id tagId,t.wifi_id wifiId,t.goods_id goodsId,t.mac_address macAddress,t.picpx picpx,t.type type
+        from tags t
+        join wifis w on t.wifi_id = w.wifi_id
+        where 1=1
+        <if test="wifiIp!=null and wifiIp != ''">
+            and w.wifi_ip =#{wifiIp}
+        </if>
+    </select>
 </mapper>
