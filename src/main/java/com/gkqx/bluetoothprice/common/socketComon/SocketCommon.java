@@ -36,14 +36,14 @@ public class SocketCommon {
     * @author Innocence
     * @date 2019/5/22 002210:21
     */
-    public static final int PID_DATA_LENGTH = 32;
+    public static final int PID_DATA_LENGTH = 16;
 
     /**
     * 如果价签第一次连上来，商品Id是没有的，所以是32个0的字符串
     * @author Innocence
     * @date 2019/5/22 002211:21
     */
-    public static final String INIT_PID = "00000000000000000000000000000000";
+    public static final String INIT_PID = "0000000000000000";
     /**
     * 与硬件端约定的标识MAC地址的标识符
     * @author Innocence

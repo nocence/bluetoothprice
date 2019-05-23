@@ -32,7 +32,8 @@ public class GoodsController {
         Result res = new Result();
         System.out.println("添加商品信息的请求到达");
         FileUtil fileUtil = new FileUtil();
-        String goodsId = fileUtil.creatFileName();
+        String goodsId = fileUtil.getUUId();
+        System.out.println(goodsId);
         goods.setGoodsId(goodsId);
         Integer goodId = goodsService.addGoodsInfo(goods);
         if(goodId!=null){

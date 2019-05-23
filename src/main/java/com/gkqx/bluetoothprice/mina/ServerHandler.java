@@ -138,6 +138,7 @@ public class ServerHandler extends IoHandlerAdapter {
         }
 
         if(stringHex.equals("OK")&& flag==true){// 收到OK报文 持续发送图片
+            if (session.getAttribute("successCode")!=null)session.removeAttribute("successCode");
             System.out.println("收到客户端OK消息，继续发送图片......");
             //这里判定从第二次收到响应之后，有没有超时
             long lastTime = System.currentTimeMillis();

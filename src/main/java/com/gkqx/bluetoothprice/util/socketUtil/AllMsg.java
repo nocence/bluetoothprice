@@ -17,17 +17,19 @@ import java.util.List;
  * @Version 1.0
  **/
 public class AllMsg {
-    public byte[] hex(String filePath,String macAddress) throws FileNotFoundException {
+    public byte[] hex(String filePath,String goodsId,String macAddress) throws FileNotFoundException {
         ArrayList<byte[]> list = new ArrayList<>();
         //获取图片的点阵数据
         byte[] bytes = new ImageToHex().toHex(filePath);
         //将点阵数据拆分小数组
         ByteUtil byteUtil = new ByteUtil();
-        byte[][] splitBytes = byteUtil.splitBytes(bytes, 243);
+        byte[][] splitBytes = byteUtil.splitBytes(bytes, 219);
         //将对应的标识符添加到小数组
         for (int i=0;i<splitBytes.length;i++){
             //流开头的标识符
             byte[] img = "IMG:".getBytes();
+            //商品id
+            byte[] goods = goodsId.getBytes();
             //mac地址
             byte[] mac = macAddress.getBytes();
             //切割成的流的大小
@@ -53,9 +55,10 @@ public class AllMsg {
             }
             byte[] stringNumBytes = stringNum.getBytes();
             list.add(img);
+            list.add(goods);
             list.add(mac);
-            list.add(numBytes);
             list.add(stringNumBytes);
+            list.add(numBytes);
             list.add(splitBytes[i]);
         }
         byte[] sysCopy = new ByteUtil().sysCopy(list);

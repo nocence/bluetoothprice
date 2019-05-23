@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -20,7 +21,7 @@ import java.util.UUID;
  **/
 public class FileUtil {
     /**
-    * 根据当前系统时间生成字符串作为文件名字
+    * UUID生成字符串作为文件名字
     * @author Innocence
     * @date 2019/4/19 001915:46
     * @param
@@ -29,6 +30,23 @@ public class FileUtil {
     public String creatFileName(){
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         return uuid;
+    }
+    /**
+    * 生成16位UUID的作为商品id
+    * @author Innocence
+    * @date 2019/5/23 002311:52
+    * @return java.lang.String
+    */
+    public static String getUUId() {
+        int first = new Random(10).nextInt(8) + 1;
+        int hashCodeV = UUID.randomUUID().toString().hashCode();
+        if (hashCodeV < 0) {//有可能是负数
+            hashCodeV = -hashCodeV;
+        }
+        // 0 代表前面补充0
+        // 4 代表长度为4
+        // d 代表参数为正数型
+        return first + String.format("%015d", hashCodeV);
     }
 
     public String saveFile(String originalFilename, String projectPath, MultipartFile file) {
@@ -85,5 +103,11 @@ public class FileUtil {
         //进行Base64编码
         BASE64Encoder encoder = new BASE64Encoder();
         return encoder.encode(data);
+    }
+
+    public static void main(String[] args) {
+        String uuid = new FileUtil().getUUId();
+
+        System.out.println(uuid);
     }
 }

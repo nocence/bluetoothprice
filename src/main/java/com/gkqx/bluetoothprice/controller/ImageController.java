@@ -187,7 +187,6 @@ public class ImageController {
     * @param
     * @return
     */
-    @Async
     @RequestMapping("sendImage")
     @ResponseBody
     public Result sendImage(ImageToWifi imageToWifi,Images images) throws FileNotFoundException {
@@ -198,7 +197,7 @@ public class ImageController {
         Images image = imagesService.getImage(images);
         System.out.println("获取图片路径："+image.getImgPath());
         AllMsg msg = new AllMsg();
-        byte[] hex = msg.hex(image.getImgPath(),imageToWifi.getMacAddress());
+        byte[] hex = msg.hex(image.getImgPath(),image.getGoodsId(),imageToWifi.getMacAddress());
 
         SessionMap sessionMap = SessionMap.newInstance();
         IoSession session = sessionMap.getSession(imageToWifi.getWifiIp());
@@ -213,27 +212,37 @@ public class ImageController {
             sessionMap.sendMsgToOne(imageToWifi.getWifiIp(), IoBuffer.wrap(snedBytes));
             // 将发送时的时间存入session，便于判断响应超时
             session.setAttribute("beginTime",System.currentTimeMillis());
-            // 获取mina监听的返回值，判定是否发送成功
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    if(session.getAttribute("successCode")!=null){
-                        String successCode = (String)session.getAttribute("successCode");
-                        if (successCode.equals("succeed")){
-                            res.setCode(ResultCommon.SUCCESS_CODE);
-                            timer.cancel();
-                        }else if (successCode.equals("failed")){
-                            res.setCode(ResultCommon.FAILED_CODE);
-                            timer.cancel();
-                        }
-                    }
-                }
-            },100,1000);
+            res.setCode(ResultCommon.SUCCESS_CODE);
         }else {
             res.setCode(ResultCommon.FAILED_CODE);
         }
-        System.out.println("发送图片的成败标识符："+res.getCode());
+        return res;
+    }
+
+    /**
+    * 监听mina返回的状态值，判断是否发送成功
+    * @author Innocence
+    * @date 2019/5/23 002310:24
+    * @param
+    * @return
+    */
+    @RequestMapping("check")
+    @ResponseBody
+    public Result checkHeart(ImageToWifi imageToWifi){
+        System.out.println("检查心跳");
+        Result res = new Result();
+        SessionMap sessionMap = SessionMap.newInstance();
+        IoSession session = sessionMap.getSession(imageToWifi.getWifiIp());
+        if(session.getAttribute("successCode")!=null){
+            String successCode = (String)session.getAttribute("successCode");
+            if (successCode.equals("succeed")){
+                res.setCode(ResultCommon.SUCCESS_CODE);
+            }else if (successCode.equals("failed")){
+                res.setCode(ResultCommon.FAILED_CODE);
+            }
+        }else if(session.getAttribute("successCode")==null){
+            return null;
+        }
         return res;
     }
 }

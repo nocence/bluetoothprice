@@ -7,10 +7,11 @@
     组合如下：
         MAC:lengthdataPID:lengthdataPIX:data
 服务器传输数据格式(均是以字符串的角度看)：
-    IMG:表示传输的是图片，长度4个字节
+    IMG:表示传输的是图片，长度4个字符号
+    goodsid:表示传输的商品id，16个字符
     mac:表示要发送的MAC地址，长度12个字节
     len:表示每段数据流的大小（图片流的有效数据），长度4个字节，不足的前面补零；如：0012，表示后续的内容长度有12个字节
     num:表示这是第几个包，长度4个字节，不足的前面补零；如：0012，表示后续的内容长度有12个字节
     data:有效数据流
     组合：
-        IMG:maclennumdata
+        IMG:-goodsid-mac-num-len-data
