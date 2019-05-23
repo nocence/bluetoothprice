@@ -104,10 +104,5 @@ public class FileUtil {
         BASE64Encoder encoder = new BASE64Encoder();
         return encoder.encode(data);
     }
-
-    public static void main(String[] args) {
-        String uuid = new FileUtil().getUUId();
-
-        System.out.println(uuid);
-    }
+    
 }
