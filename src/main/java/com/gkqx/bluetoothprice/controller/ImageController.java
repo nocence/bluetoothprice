@@ -1,10 +1,8 @@
 package com.gkqx.bluetoothprice.controller;
 
 import com.gkqx.bluetoothprice.cache.ImagesCachePool;
-import com.gkqx.bluetoothprice.cache.SessionCache;
 import com.gkqx.bluetoothprice.common.resultCommon.ResultCommon;
 import com.gkqx.bluetoothprice.dto.Result;
-import com.gkqx.bluetoothprice.mina.ServerHandler;
 import com.gkqx.bluetoothprice.mina.SessionMap;
 import com.gkqx.bluetoothprice.model.*;
 import com.gkqx.bluetoothprice.service.*;
@@ -15,8 +13,6 @@ import com.gkqx.bluetoothprice.util.socketUtil.AllMsg;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,10 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * @ClassName ImageController
@@ -233,7 +226,13 @@ public class ImageController {
         Result res = new Result();
         SessionMap sessionMap = SessionMap.newInstance();
         IoSession session = sessionMap.getSession(imageToWifi.getWifiIp());
-        if(session.getAttribute("successCode")!=null){
+        if (session.getAttribute("beginTime")!=null){
+            long beginTime =(Long)session.getAttribute("beginTime");
+            long nowTime = System.currentTimeMillis();
+            if((nowTime- beginTime)>1000*2){
+                res.setCode(ResultCommon.FAILED_CODE);
+            }
+        }else if(session.getAttribute("successCode")!=null){
             String successCode = (String)session.getAttribute("successCode");
             if (successCode.equals("succeed")){
                 res.setCode(ResultCommon.SUCCESS_CODE);

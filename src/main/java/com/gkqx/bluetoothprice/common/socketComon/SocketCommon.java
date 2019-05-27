@@ -65,4 +65,12 @@ public class SocketCommon {
     */
     public static final String PIX = "PIX:";
 
+    /**
+    * 服务器与硬件之间的响应报文
+    * @author Innocence
+    * @date 2019/5/27 002709:28
+    */
+    public static final String SUCCESS_RETURN = "STA:OK";
+    public static final String FEILED_RETURN = "STA:ERROR";
+    public static final String IMG_END = "STA:END";
 }

@@ -7,8 +7,6 @@ package com.gkqx.bluetoothprice.mina;
 * @Date 2019/4/26 002616:36
 * @Version 1.0
 **/
-import javax.annotation.PostConstruct;
-
 import com.gkqx.bluetoothprice.cache.ImagesCachePool;
 import com.gkqx.bluetoothprice.model.Images;
 import com.gkqx.bluetoothprice.model.Tags;
@@ -24,11 +22,10 @@ import org.apache.mina.transport.socket.SocketSessionConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.net.InetSocketAddress;
-import java.util.regex.Pattern;
 
 import static com.gkqx.bluetoothprice.common.socketComon.SocketCommon.*;
 
@@ -71,7 +68,7 @@ public class ServerHandler extends IoHandlerAdapter {
         logger.info("session:"+session);
         logger.info("[服务建立]" + hostAddress);
     }
-    @Async
+
     @Override
     public void messageReceived(IoSession session, Object message)throws Exception {//接收消息
         String hostAddress = ((InetSocketAddress) session.getRemoteAddress()).getAddress().getHostAddress();
@@ -119,11 +116,14 @@ public class ServerHandler extends IoHandlerAdapter {
                 Integer integer = serverHandler.tagsService.insertTag(tags);
                 if(integer != 0 || integer != null){
                     logger.info("价签："+macAddress+"已入库");
+                    session.write(IoBuffer.wrap(SUCCESS_RETURN.getBytes()));
                 }else{
                     logger.info("价签："+macAddress+"入库失败");
+                    session.write(IoBuffer.wrap(FEILED_RETURN.getBytes()));
                 }
             }else {
                 logger.info("价签："+macAddress+"已存在");
+                session.write(IoBuffer.wrap(FEILED_RETURN.getBytes()));
             }
         }
 
@@ -136,8 +136,8 @@ public class ServerHandler extends IoHandlerAdapter {
             //判定之后把session移除，否则beginTime一直存在，当发送总时长超过规定时间，剩下的数据就发送不了
             session.removeAttribute("beginTime");
         }
-
-        if(stringHex.equals("OK")&& flag==true){// 收到OK报文 持续发送图片
+        //主要是判定关于图片发送时，硬软件端的通信
+        if(stringHex.equals(SUCCESS_RETURN)&& flag==true){// 收到OK报文 持续发送图片
             if (session.getAttribute("successCode")!=null)session.removeAttribute("successCode");
             System.out.println("收到客户端OK消息，继续发送图片......");
             //这里判定从第二次收到响应之后，有没有超时
@@ -167,15 +167,23 @@ public class ServerHandler extends IoHandlerAdapter {
                     ImagesCachePool.removeImages( sendImg.getSessionID() );
                     // 发送成功之后存入成功标识符，给发请请求的controller判定是否发送成功
                     session.setAttribute("successCode","succeed");
-                    // 返回报文
-                    sessionMap.sendMsgToOne(sendImg.getWifiIP(), IoBuffer.wrap("serverOK".getBytes()));
                 }
             }else {
                 session.setAttribute("successCode","failed");
             }
-        }else{
+        }else if(stringHex.equals(FEILED_RETURN) || flag==false){
+            //收到ERROR消息或者超时，暂停发送，清除缓存并返回失败标识
+            //因为还可能收到其他的无需处理的请求，所以这里的判定写准确，以免被其他消息干扰
+            Images sendImg = ImagesCachePool.getImages(session.getId());
+            ImagesCachePool.removeImages( sendImg.getSessionID() );
             session.setAttribute("successCode","failed");
+        }else if(stringHex.equals(IMG_END)){
+            //图片发送完成
+            Images sendImg = ImagesCachePool.getImages(session.getId());
+            ImagesCachePool.removeImages( sendImg.getSessionID() );
+            session.setAttribute("successCode","succeed");
         }
+
 
         logger.info("[收到消息,来自："+hostAddress+"]" + stringHex);
 

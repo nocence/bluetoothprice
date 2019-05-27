@@ -5,8 +5,6 @@ import com.gkqx.bluetoothprice.util.imgUtil.ImageToHex;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @ClassName AllMsg
@@ -64,4 +62,5 @@ public class AllMsg {
         byte[] sysCopy = new ByteUtil().sysCopy(list);
         return sysCopy;
     }
+
 }
