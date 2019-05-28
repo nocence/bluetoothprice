@@ -46,8 +46,6 @@ public class ServerHandler extends IoHandlerAdapter {
 
     private static ServerHandler serverHandler ;
 
-
-
     //2通过@PostConstruct实现初始化bean之前进行的操作
     @PostConstruct
     public void init() {
@@ -100,7 +98,6 @@ public class ServerHandler extends IoHandlerAdapter {
                 String goodsInitId = stringHex.substring(SIGN_LENGTH*2+MAC_DATA_LENGTH, SIGN_LENGTH*2+MAC_DATA_LENGTH+PID_DATA_LENGTH);
                 String goodsId ;
                 //价签第一次连上的时候可能没有商品id，所以要判定,i2==0,说明没有商品id的信息内容
-
                 if(goodsInitId.equals(INIT_PID)){
                     goodsId = null;
                 }else {

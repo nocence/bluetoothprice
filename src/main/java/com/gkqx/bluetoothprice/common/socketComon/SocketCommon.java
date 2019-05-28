@@ -70,7 +70,7 @@ public class SocketCommon {
     * @author Innocence
     * @date 2019/5/27 002709:28
     */
-    public static final String SUCCESS_RETURN = "STA:OK";
-    public static final String FEILED_RETURN = "STA:ERROR";
-    public static final String IMG_END = "STA:END";
+    public static final String SUCCESS_RETURN = "ACK:00";
+    public static final String FEILED_RETURN = "ACK:01";
+    public static final String IMG_END = "ACK:02";//硬件端返回的图片接收完成
 }

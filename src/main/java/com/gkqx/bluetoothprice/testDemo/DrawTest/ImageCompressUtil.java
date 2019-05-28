@@ -1,18 +1,13 @@
 package com.gkqx.bluetoothprice.testDemo.DrawTest;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.imageio.ImageIO;
-
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGEncodeParam;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
 
 public class ImageCompressUtil {
     /**
@@ -141,5 +136,6 @@ public class ImageCompressUtil {
     public static void main(String args[]) throws Exception {
      //   ImageCompressUtil.zipImageFile("F:/GoogleDownload/downImg.png", 250, 122, 1f, "x2");
         ImageCompressUtil.saveMinPhoto("F:/GoogleDownload/downImg.png", "F:/GoogleDownload/downImgCom.png", 212, 1);
+
     }
 }

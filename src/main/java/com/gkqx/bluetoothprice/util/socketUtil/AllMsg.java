@@ -21,7 +21,7 @@ public class AllMsg {
         byte[] bytes = new ImageToHex().toHex(filePath);
         //将点阵数据拆分小数组
         ByteUtil byteUtil = new ByteUtil();
-        byte[][] splitBytes = byteUtil.splitBytes(bytes, 219);
+        byte[][] splitBytes = byteUtil.splitBytes(bytes, 211);
         //将对应的标识符添加到小数组
         for (int i=0;i<splitBytes.length;i++){
             //流开头的标识符
