@@ -73,4 +73,5 @@ public class SocketCommon {
     public static final String SUCCESS_RETURN = "ACK:00";
     public static final String FEILED_RETURN = "ACK:01";
     public static final String IMG_END = "ACK:02";//硬件端返回的图片接收完成
+    public static final String NUM_ERROR = " ACK:03";//数据包顺序不对
 }

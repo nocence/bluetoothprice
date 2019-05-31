@@ -149,8 +149,6 @@ public class ServerHandler extends IoHandlerAdapter {
                 }
             }
             if (isSend==true ||session.getAttribute("secondTime")==null){
-                //如果session存了值，要清空，否则上面的超时判断会一直为false
-                if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
                 SessionMap sessionMap = SessionMap.newInstance();
                 // 从缓存池获取对应会话待发送图片
                 Images sendImg = ImagesCachePool.getImages(session.getId());
@@ -158,6 +156,8 @@ public class ServerHandler extends IoHandlerAdapter {
                 byte[] snedBytes = ByteUtil.queueOutByte(sendImg.getImgQueue(), sendImg.getSize());
                 if( snedBytes.length > 0) {
                     sessionMap.sendMsgToOne(sendImg.getWifiIP(), IoBuffer.wrap(snedBytes));
+                    //如果session存了值，要清空，否则上面的超时判断会一直为false
+                    if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
                     session.setAttribute("secondTime",System.currentTimeMillis());
                 }else {// 图片发送完成
                     // 清除缓存
@@ -177,8 +177,10 @@ public class ServerHandler extends IoHandlerAdapter {
         }else if(stringHex.equals(IMG_END)){
             //图片发送完成
             Images sendImg = ImagesCachePool.getImages(session.getId());
-            ImagesCachePool.removeImages( sendImg.getSessionID() );
+            ImagesCachePool.removeImages( sendImg.getSessionID());
             session.setAttribute("successCode","succeed");
+            //将二次验证超时的session清除，否则第二次发送图片就会false
+            if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
         }
 
 

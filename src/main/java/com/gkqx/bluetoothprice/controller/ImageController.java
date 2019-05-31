@@ -222,7 +222,6 @@ public class ImageController {
     @RequestMapping("check")
     @ResponseBody
     public Result checkHeart(ImageToWifi imageToWifi){
-        System.out.println("检查心跳");
         Result res = new Result();
         SessionMap sessionMap = SessionMap.newInstance();
         IoSession session = sessionMap.getSession(imageToWifi.getWifiIp());
