@@ -39,7 +39,7 @@ public class SocketCommon {
     public static final int PID_DATA_LENGTH = 16;
 
     /**
-    * 如果价签第一次连上来，商品Id是没有的，所以是32个0的字符串
+    * 如果价签第一次连上来，商品Id是没有的，所以是16个0的字符串
     * @author Innocence
     * @date 2019/5/22 002211:21
     */

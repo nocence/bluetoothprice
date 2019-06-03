@@ -2,11 +2,10 @@ package com.gkqx.bluetoothprice.util.imgUtil;
 
 import com.gkqx.bluetoothprice.util.byteUtil.ByteUtil;
 
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * @ClassName ImageToHex2
@@ -18,32 +17,34 @@ import java.util.List;
 public class ImageToHex {
     public byte[] toHex(String filePath) {
         byte[] result = null;
-        List<byte[]> bytes = new ArrayList<>();
         ByteUtil util = new ByteUtil();
+        ByteArrayOutputStream bos = null;
         try {
-            FileInputStream fis = new FileInputStream(filePath);
-            BufferedInputStream bis = new BufferedInputStream(fis);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-            byte[] buff = new byte[1024];
-            while ((bis.read(buff))!=-1) {
-                bytes.add(buff);
-            }
-            byte[] copy = util.sysCopy(bytes);
+            bos = new ByteArrayOutputStream();
+            byte[] copy = util.toByteArray(filePath);
+            byte[] newCopy = Arrays.copyOfRange(copy, 54, copy.length);
             byte[] intoFile = util.intoFile(filePath);
             //图片数据转换为点阵数据
             byte[] dotBuf = new byte[util.getImgWidth(intoFile) * util.widFianl(intoFile)];
-            byte m;
+
+            int adr=0;
+            int bit=0;
+            int getBigCount = util.getBigCount(intoFile);
+            int imgHeight = util.getImgHeight(intoFile);
+            int imgWidth = util.getImgWidth(intoFile);
+            int bmpLine = util.allFianl(intoFile);
+            int dotLine = util.widFianl(intoFile);
             //这里两个byte数组的元素是常量，不允许改动
             byte[] mask = {-128, 64, 32, 16, 8, 4, 2, 1};
             byte[] maskR = {127, -65, -33, -17, -9, -5, -3, -2};
-            for (int i = 0; i < util.getImgHeight(intoFile); i++) {
-                for (int j = 0; j < util.allFianl(intoFile); j = j + 3) {
-                    m = (byte) ((j / 3) % 8);
-                    if (copy[util.allFianl(intoFile) * i + j] == -1) {
-                        dotBuf[i * util.widFianl(intoFile) + j / util.getBigCount(intoFile)] |= mask[m];
+            for (int i = 0; i < imgWidth; i++) {
+                for (int j = 0; j < imgHeight; j++) {
+                    adr =(imgHeight-1-j)*bmpLine+i*getBigCount/8;
+                    bit = (i*getBigCount)%8;
+                    if ((newCopy[adr] & mask[bit]) != 0) {
+                        dotBuf[i * dotLine + j / 8] |= mask[j%8];
                     } else {
-                        dotBuf[i * util.widFianl(intoFile) + j / util.getBigCount(intoFile)] &= maskR[m];
+                        dotBuf[i * dotLine + j / 8] &= maskR[j%8];
                     }
                 }
             }
@@ -57,4 +58,5 @@ public class ImageToHex {
         }
         return result;
     }
+
 }

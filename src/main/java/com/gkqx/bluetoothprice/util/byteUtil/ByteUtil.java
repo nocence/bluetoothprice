@@ -1,9 +1,8 @@
 package com.gkqx.bluetoothprice.util.byteUtil;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -99,6 +98,38 @@ public class ByteUtil {
         return byt;
     }
     /**
+    * 将文件读到一个byte数组里面
+    * @author Innocence
+    * @date 2019/6/3 000315:21
+    * @param
+    * @return
+    */
+    public byte[] toByteArray(String filePath) throws IOException {
+
+        FileChannel fc = null;
+        RandomAccessFile rf = null;
+        try {
+            rf = new RandomAccessFile(filePath, "r");
+            fc = rf.getChannel();
+            MappedByteBuffer byteBuffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size()).load();
+            byte[] result = new byte[(int) fc.size()];
+            if (byteBuffer.remaining() > 0) {
+                byteBuffer.get(result, 0, byteBuffer.remaining());
+            }
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            try {
+                rf.close();
+                fc.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    /**
      * 将文件流读取出来.因为文件属性在数据流前54个字节就能得到，所以这里只需要读一部分数据就足够
      * @author Innocence
      * @date 2019/4/26 002610:27
@@ -172,7 +203,7 @@ public class ByteUtil {
      * @return int
      */
     public int widFianl(byte[] bytes){
-        int widFianl = (getImgWidth(bytes)+7)/8;
+        int widFianl = (getImgHeight(bytes)+7)/8;
         return widFianl;
     }
     /**

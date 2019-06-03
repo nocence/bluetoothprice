@@ -166,6 +166,7 @@ public class ServerHandler extends IoHandlerAdapter {
                     session.setAttribute("successCode","succeed");
                 }
             }else {
+                if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
                 session.setAttribute("successCode","failed");
             }
         }else if(stringHex.equals(FEILED_RETURN) || flag==false){
@@ -173,6 +174,7 @@ public class ServerHandler extends IoHandlerAdapter {
             //因为还可能收到其他的无需处理的请求，所以这里的判定写准确，以免被其他消息干扰
             Images sendImg = ImagesCachePool.getImages(session.getId());
             ImagesCachePool.removeImages( sendImg.getSessionID() );
+            if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
             session.setAttribute("successCode","failed");
         }else if(stringHex.equals(IMG_END)){
             //图片发送完成
