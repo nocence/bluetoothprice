@@ -24,7 +24,7 @@ public class ImageToHex {
             byte[] copy = util.toByteArray(filePath);
             byte[] newCopy = Arrays.copyOfRange(copy, 54, copy.length);
             byte[] intoFile = util.intoFile(filePath);
-            //图片数据转换为点阵数据
+            //图片数据转换为点阵数据(以横排的点为基准)
             byte[] dotBuf = new byte[util.getImgWidth(intoFile) * util.widFianl(intoFile)];
 
             int adr=0;
@@ -42,9 +42,9 @@ public class ImageToHex {
                     adr =(imgHeight-1-j)*bmpLine+i*getBigCount/8;
                     bit = (i*getBigCount)%8;
                     if ((newCopy[adr] & mask[bit]) != 0) {
-                        dotBuf[i * dotLine + j / 8] |= mask[j%8];
+                        dotBuf[(j/8) * imgWidth + i] |= mask[j%8];
                     } else {
-                        dotBuf[i * dotLine + j / 8] &= maskR[j%8];
+                        dotBuf[(j/8) * imgWidth + i] &= maskR[j%8];
                     }
                 }
             }

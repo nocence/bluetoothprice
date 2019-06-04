@@ -15,7 +15,7 @@
     </select>
     <!--查询所有价签并提供给前端显示-->
     <select id="getAllTagsToFont" parameterType="com.gkqx.bluetoothprice.model.FontTag" resultType="com.gkqx.bluetoothprice.model.FontTag">
-        select t.mac_address macAddress,s.store_name storeName,w.wifi_ip wifiIp,g.goods_name goodsName,g.goods_price goodsPrice,g.goods_specs goodsSpecs,g.goods_unit goodsUnit,t.type TYPE
+        select t.mac_address macAddress,s.store_name storeName,w.wifi_ip wifiIp,g.goods_name goodsName,g.goods_price goodsPrice,g.goods_specs goodsSpecs,g.goods_unit goodsUnit,t.type type
         from tags t
         join wifis w on t.wifi_id = w.wifi_id
         join stores s on w.store_id = s.store_id
