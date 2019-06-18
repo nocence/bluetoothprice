@@ -31,4 +31,9 @@
         select img_id imgId,img_name imgName,img_path imgPath,goods_id goodsId
          from images where img_name = #{imgName}
     </select>
+
+    <!--根据图片名删除单张图片-->
+    <delete id="deleteImageByImageName" parameterType="com.gkqx.bluetoothprice.model.Images" >
+        delete from images where img_name = #{imgName}
+    </delete>
 </mapper>

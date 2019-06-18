@@ -32,4 +32,9 @@ public class ImagesServiceImpl implements ImagesService {
     public Images getImage(Images images) {
         return imagesMapper.getImage(images);
     }
+
+    @Override
+    public Integer deleteImageByImageName(Images images) {
+        return imagesMapper.deleteImageByImageName(images);
+    }
 }

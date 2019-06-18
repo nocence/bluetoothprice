@@ -20,7 +20,7 @@ import java.io.IOException;
  **/
 public class DrawImg {
     /**
-    * 生成整张图片的工具,图片大小已经限定为212*104。生成图片之后保存到本地
+    * 生成整张图片的工具,图片大小已经限定为250*122。生成图片之后保存到本地
     * @author Innocence
     * @date 2019/4/19 001914:59
     * @param
@@ -28,7 +28,7 @@ public class DrawImg {
     */
     public String DrawInfo(Goods goods, String path) throws IOException {
         //得到图片缓冲区
-        BufferedImage bi = new BufferedImage(250,122,BufferedImage.TYPE_INT_RGB);//INT精确度达到一定,RGB三原色，高度104,宽度212
+        BufferedImage bi = new BufferedImage(250,122,BufferedImage.TYPE_INT_RGB);//INT精确度达到一定,RGB三原色，高度122,宽度250
         int oldWidth = bi.getWidth();
         int oldHeight = bi.getHeight();
         //得到它的绘制环境(这张图片的笔)

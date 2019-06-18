@@ -243,4 +243,37 @@ public class ImageController {
         }
         return res;
     }
+
+    /**
+    * 根据文件名删除文件（Attention：有可能出现文件删除了，但是数据库没删掉，此时在遍历图片时就会报错）
+    * @author Innocence
+    * @date 2019/6/18 001815:53
+    * @param
+    * @return com.gkqx.bluetoothprice.dto.Result
+    */
+    @RequestMapping("deleteOne")
+    @ResponseBody
+    public Result deleteImageByImageName(ImageToWifi imageToWifi,Images images){
+        Result res = new Result();
+        //根据图片名查询图片路径
+        String imageName = imageToWifi.getImageName();
+        System.out.println("删除图片时获取的图片名"+imageName);
+        images.setImgName(imageName);
+        Images gotImage = imagesService.getImage(images);
+        //删除文件
+        FileUtil fileUtil = new FileUtil();
+        boolean isDelete = fileUtil.deleteFile(gotImage.getImgPath());
+        if(isDelete ==true){
+            //删除数据库记录
+            Integer integer = imagesService.deleteImageByImageName(images);
+            if (integer!=null){
+                res.setCode(ResultCommon.SUCCESS_CODE);
+            }else{
+                res.setCode(ResultCommon.FAILED_CODE);
+            }
+        }else {
+            res.setCode(ResultCommon.FAILED_CODE);
+        }
+        return res;
+    }
 }

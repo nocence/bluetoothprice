@@ -15,4 +15,6 @@ public interface ImagesService {
 
     //根据图片名查询单张图片,主要是为了拿到图片路径进行发送
     Images getImage(Images images);
+
+    Integer deleteImageByImageName(Images images);
 }

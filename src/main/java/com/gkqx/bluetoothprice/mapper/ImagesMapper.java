@@ -2,7 +2,6 @@ package com.gkqx.bluetoothprice.mapper;
 
 import com.gkqx.bluetoothprice.model.Goods;
 import com.gkqx.bluetoothprice.model.GoodsImages;
-import com.gkqx.bluetoothprice.model.ImageToWifi;
 import com.gkqx.bluetoothprice.model.Images;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -38,4 +37,13 @@ public interface ImagesMapper {
     * @return com.gkqx.bluetoothprice.model.Images
     */
     Images getImage(Images images);
+
+    /**
+    * 根据图片名字删除单张图片
+    * @author Innocence
+    * @date 2019/6/18 001815:23
+    * @param images
+    * @return boolean
+    */
+    Integer deleteImageByImageName(Images images);
 }

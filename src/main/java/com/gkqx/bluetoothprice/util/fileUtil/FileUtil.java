@@ -105,4 +105,25 @@ public class FileUtil {
         return encoder.encode(data);
     }
 
+    /**
+    * 删除单个文件
+    * @author Innocence
+    * @date 2019/6/18 001815:48
+    * @param [fileName]
+    * @return boolean
+     *  true删除成功返回
+     *  false删除失败返回
+    */
+    public boolean deleteFile(String fileName) {
+        File file = new File(fileName);
+        if (file.isFile() && file.exists()) {
+            file.delete();
+            System.out.println("删除单个文件" + fileName + "成功！");
+            return true;
+        } else {
+            System.out.println("删除单个文件" + fileName + "失败！");
+            return false;
+        }
+    }
+
 }
