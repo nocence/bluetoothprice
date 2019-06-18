@@ -1,15 +1,11 @@
 package com.gkqx.bluetoothprice.util.imgUtil;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
 import org.krysalis.barcode4j.impl.code39.Code39Bean;
 import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
 import org.krysalis.barcode4j.tools.UnitConv;
+
+import java.awt.image.BufferedImage;
+import java.io.*;
 
 
 /**
@@ -81,7 +77,7 @@ public class BarCode{
     }
     public static void main(String[] args) {
         String msg = "123456789";
-        String path = "barcode.png";
+        String path = "F:\\LymTools\\bluetoothprice\\target\\classes\\com\\gkqx\\bluetoothprice\\util\\imgUtil\\barcode.jpeg";
         generateFile(msg, path);
     }
 }

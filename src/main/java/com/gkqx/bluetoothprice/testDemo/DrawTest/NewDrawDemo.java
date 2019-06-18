@@ -1,7 +1,6 @@
-package com.gkqx.bluetoothprice.util.imgUtil;
+package com.gkqx.bluetoothprice.testDemo.DrawTest;
 
-import com.gkqx.bluetoothprice.model.Goods;
-import com.gkqx.bluetoothprice.util.fileUtil.FileUtil;
+
 import sun.font.FontDesignMetrics;
 
 import javax.imageio.ImageIO;
@@ -10,30 +9,15 @@ import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-
-/**
- * @ClassName Drawgoods
- * @Description 生成图片的工具类
- * @Author Innocence
- * @Date 2019/4/19 001910:37
- * @Version 1.0
- **/
-public class DrawImg {
-    /**
-    * 生成整张图片的工具,图片大小已经限定为212*104。生成图片之后保存到本地
-    * @author Innocence
-    * @date 2019/4/19 001914:59
-    * @param
-    * @return  图片保存地址
-    */
-    public String DrawInfo(Goods goods, String path) throws IOException {
+public class NewDrawDemo {
+    public static void main(String[] args) throws IOException {
         //得到图片缓冲区
         BufferedImage bi = new BufferedImage(250,122,BufferedImage.TYPE_INT_RGB);//INT精确度达到一定,RGB三原色，高度104,宽度212
         int oldWidth = bi.getWidth();
         int oldHeight = bi.getHeight();
+
         //得到它的绘制环境(这张图片的笔)
         Graphics2D g2 = (Graphics2D) bi.getGraphics();
-
         //头部信息
         g2.fillRect(0,0,oldWidth,20);//填充一个矩形 左上角坐标(0,0),宽212,高16;
         g2.setColor(Color.black);//设置颜色
@@ -41,7 +25,7 @@ public class DrawImg {
         g2.setFont(new Font("宋体",Font.BOLD,18)); //设置字体:字体、字号、大小
         FontDesignMetrics headMetrics = FontDesignMetrics.getMetrics(new Font("宋体",Font.BOLD,18));//获取分辨率
         g2.setColor(Color.white);//设置背景颜色
-        String headStr = goods.getGoodsName();
+        String headStr = "美汁源果粒果汁";
         int headStrWidth = headMetrics.stringWidth(headStr);
         int headLeft = (oldWidth-headStrWidth)/2; //左边位置
         int headTop = 1+headMetrics.getAscent(); //顶边位置+上升距离（原本字体基线位置对准画布的y坐标导致字体偏上ascent距离，加上ascent后下移刚好顶边吻合）
@@ -54,20 +38,16 @@ public class DrawImg {
         g2.setFont(new Font("宋体",Font.PLAIN,16));
         FontDesignMetrics midLeftMetrics = FontDesignMetrics.getMetrics(new Font("宋体",Font.BOLD,16));
         g2.setColor(Color.black);
-        String midLeft1 = "单位："+goods.getGoodsUnit();
+        String midLeft1 = "单位：GE";
         int midLeftAscent = midLeftMetrics.getAscent();
         g2.drawString(midLeft1,0,22+midLeftAscent);
-        String midLeft2 = "规格："+goods.getGoodsSpecs();
+        String midLeft2 = "规格：420ML";
         g2.drawString(midLeft2,0,42+midLeftAscent);
-        String midLeft3 = "产地："+goods.getGoodsPlace();
+        String midLeft3 = "产地：中国武汉";
         g2.drawString(midLeft3,0,62+midLeftAscent);
-        String midLeft4 = "编码："+goods.getGoodsCode();
+        String midLeft4 = "编码：068078";
         g2.drawString(midLeft4,0,82+midLeftAscent);
 
-        //截取价格部分的整数和小数部分
-        String price = goods.getGoodsPrice();
-        String integerPrice = price.substring(0, price.lastIndexOf(".")+1 );
-        String doublePrice = price.substring(price.lastIndexOf(".") + 1);
         //右边价格整数部分
         g2.fillRect(oldWidth/2,20,oldWidth/4,40);
         g2.setColor(Color.white);
@@ -75,7 +55,7 @@ public class DrawImg {
         g2.setFont(new Font("幼圆",Font.BOLD,36));
         FontDesignMetrics midRightMetrics = FontDesignMetrics.getMetrics(new Font("幼圆", Font.BOLD, 36));
         g2.setColor(Color.black);
-        String midRight1 = integerPrice;
+        String midRight1 = "330.";
         int midRight1Width = midRightMetrics.stringWidth(midRight1);
         int midRight1Ascent = oldWidth/2+(oldHeight/2-midRight1Width)/2;
         g2.drawString(midRight1,midRight1Ascent,20+midRightMetrics.getAscent());
@@ -88,7 +68,7 @@ public class DrawImg {
         FontDesignMetrics midRight1Metrics = FontDesignMetrics.getMetrics(new Font("宋体", Font.PLAIN, 24));
         int midRight1MetricsHeight = midRight1Metrics.getHeight();
         g2.setColor(Color.black);
-        String midRight2 = doublePrice;
+        String midRight2 = "40";
         String midRight3 = "元";
         g2.drawString(midRight2,3*oldWidth/4,20+midRight1Metrics.getAscent());
         g2.drawString(midRight3,3*oldWidth/4+midRight1Metrics.stringWidth(midRight2),midRight1Metrics.getAscent()+midRight1MetricsHeight-3);
@@ -99,7 +79,7 @@ public class DrawImg {
         g2.fillRect(oldWidth/2,60,oldWidth/2,40);
         g2.setFont(new Font("宋体",Font.PLAIN,14));
         g2.setColor(Color.black);
-        String midRightDown = goods.getGoodsBarcode();
+        String midRightDown = "1234567890123";
         FontDesignMetrics midRightDownMetrics = FontDesignMetrics.getMetrics(new Font("宋体", Font.PLAIN, 14));
         int stringWidth = midRightDownMetrics.stringWidth(midRightDown);
         g2.drawString(midRightDown,oldWidth/2+(oldWidth/2-stringWidth)/2,60+midRightDownMetrics.getAscent());
@@ -110,17 +90,14 @@ public class DrawImg {
         g2.fillRect(0,102,oldWidth,20);
         g2.setFont(new Font("宋体",Font.PLAIN,14));
         g2.setColor(Color.black);
-        String down = "举报监督电话：12358 ，"+goods.getGoodsTell();
+        String down = "举报监督电话：12358 ，4000230033";
         FontDesignMetrics downMetrics = FontDesignMetrics.getMetrics(new Font("宋体", Font.PLAIN, 14));
         int downWidth = downMetrics.stringWidth(down);
         g2.drawString(down,(oldWidth-downWidth)/2,104+downMetrics.getAscent());
+        //将生成的图片放在项目路径下
+        String path = NewDrawDemo.class.getResource("").getPath();
+        System.out.println(path);
+        ImageIO.write(bi,"PNG",new FileOutputStream(path+"a.bmp"));//保存图片 JPEG表示保存格式
 
-        FileUtil fileUtil = new FileUtil();
-        String fileName = fileUtil.creatFileName()+".bmp";
-
-        String fileClassPath = path+fileName;
-        ImageIO.write(bi,"bmp",new FileOutputStream(fileClassPath));//保存图片 bmp表示保存格式
-        return fileClassPath;
     }
-
 }
