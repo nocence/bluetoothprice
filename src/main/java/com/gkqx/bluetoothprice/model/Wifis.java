@@ -1,8 +1,11 @@
 package com.gkqx.bluetoothprice.model;
 
 
-public class Wifis {
+import java.io.Serializable;
 
+public class Wifis implements Serializable {
+
+    private static final long serialVersionUID = -5685331409958244265L;
     private Integer wifiId;
 
     private String wifiIp;

@@ -1,5 +1,7 @@
 package com.gkqx.bluetoothprice.model;
 
+import java.io.Serializable;
+
 /**
  * @ClassName GoodsImages
  * @Description 用于传送到前端显示图片的实体类
@@ -7,8 +9,9 @@ package com.gkqx.bluetoothprice.model;
  * @Date 2019/5/8 000815:37
  * @Version 1.0
  **/
-public class GoodsImages {
+public class GoodsImages implements Serializable {
 
+    private static final long serialVersionUID = 5743441048517912926L;
     private String goodsName;
 
     private String goodsSpecs;

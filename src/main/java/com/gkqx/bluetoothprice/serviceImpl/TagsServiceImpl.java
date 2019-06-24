@@ -37,4 +37,9 @@ public class TagsServiceImpl implements TagsService {
     public List<Tags> getAllTags(String  wifiIp) {
         return tagsMapper.getAllTags(wifiIp);
     }
+
+    @Override
+    public Integer updateTagOfGoodsId(Tags tags) {
+        return tagsMapper.updateTagOfGoodsId(tags);
+    }
 }

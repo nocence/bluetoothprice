@@ -39,4 +39,14 @@
         </if>
         and t.type = 1;
     </select>
+    <!--更新tags的商品ID-->
+    <update id="updateTagOfGoodsId" parameterType="com.gkqx.bluetoothprice.model.Tags" keyProperty="tagId" useGeneratedKeys="true">
+        update tags
+        <set>
+            <if test="goodsId != null">
+                goods_id = #{goodsId,jdbcType = VARCHAR},
+            </if>
+        </set>
+        where mac_address = #{MacAddress}
+    </update>
 </mapper>

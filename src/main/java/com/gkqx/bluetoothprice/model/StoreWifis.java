@@ -1,5 +1,7 @@
 package com.gkqx.bluetoothprice.model;
 
+import java.io.Serializable;
+
 /**
  * @ClassName StoreWifis
  * @Description 用于前端查询wifi列表时传值
@@ -7,8 +9,9 @@ package com.gkqx.bluetoothprice.model;
  * @Date 2019/5/9 000920:17
  * @Version 1.0
  **/
-public class StoreWifis {
+public class StoreWifis implements Serializable {
 
+    private static final long serialVersionUID = 3157036737936558708L;
     private Integer storeId;
 
     private String storeName;

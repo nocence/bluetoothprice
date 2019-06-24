@@ -17,4 +17,6 @@ public interface TagsMapper {
     List<FontTag> getAllTagsToFont(FontTag fontTag);
 
     List<Tags> getAllTags(@Param("wifiIp") String  wifiIp);
+
+    Integer updateTagOfGoodsId(Tags tags);
 }

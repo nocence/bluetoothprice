@@ -1,5 +1,7 @@
 package com.gkqx.bluetoothprice.model;
 
+import java.io.Serializable;
+
 /**
  * @ClassName FontTag
  * @Description 用于传递前端查询所有价签的信息实体类
@@ -7,7 +9,9 @@ package com.gkqx.bluetoothprice.model;
  * @Date 2019/5/15 001511:15
  * @Version 1.0
  **/
-public class FontTag {
+public class FontTag implements Serializable {
+
+    private static final long serialVersionUID = 920026429257222474L;
 
     private String macAddress;
 

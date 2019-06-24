@@ -1,5 +1,7 @@
 package com.gkqx.bluetoothprice.model;
 
+import java.io.Serializable;
+
 /**
  * @ClassName ImgInfo
  * @Description 图像信息实体类
@@ -7,8 +9,9 @@ package com.gkqx.bluetoothprice.model;
  * @Date 2019/4/19 001916:32
  * @Version 1.0
  **/
-public class ImgInfo {
+public class ImgInfo implements Serializable {
 
+    private static final long serialVersionUID = -8434273984031256168L;
     private Integer imgId;//对应数据库的主键对象
 
     private String title;//标题

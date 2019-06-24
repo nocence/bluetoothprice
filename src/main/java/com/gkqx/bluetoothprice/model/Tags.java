@@ -1,5 +1,7 @@
 package com.gkqx.bluetoothprice.model;
 
+import java.io.Serializable;
+
 /**
  * @ClassName Tags
  * @Description 价签的实体类
@@ -7,8 +9,9 @@ package com.gkqx.bluetoothprice.model;
  * @Date 2019/5/14 001415:56
  * @Version 1.0
  **/
-public class Tags {
+public class Tags implements Serializable {
 
+    private static final long serialVersionUID = 556254810858481809L;
     private Integer tagId;
 
     private Integer wifiId;

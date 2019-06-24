@@ -13,6 +13,7 @@ import com.gkqx.bluetoothprice.util.socketUtil.AllMsg;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -276,4 +278,82 @@ public class ImageController {
         }
         return res;
     }
+
+    /**
+    * 批量发送图片
+    * @author Innocence
+    * @date 2019/6/21 002111:16
+    * @param sendAllWifi, images
+    * @return com.gkqx.bluetoothprice.dto.Result
+    */
+    @RequestMapping("sendAll")
+    @ResponseBody
+    public Result sendAllImages(@RequestBody ImageToWifi[] sendAllWifi, Images images) throws IOException {
+        Result res = new Result();
+        AllMsg msg = new AllMsg();
+        SessionMap sessionMap = SessionMap.newInstance();
+        ArrayList<byte[]> allHexs = new ArrayList<byte[]>();
+        ArrayList<IoSession> allSessions = new ArrayList<>();
+        for (int i = 0;i<sendAllWifi.length;i++){
+            String imageName = sendAllWifi[i].getImageName();
+            images.setImgName(imageName);
+            Images image = imagesService.getImage(images);
+            byte[] hex = msg.hex(image.getImgPath(), image.getGoodsId(), sendAllWifi[i].getMacAddress());
+            allHexs.add(hex);
+            IoSession session = sessionMap.getSession(sendAllWifi[i].getWifiIp());
+            allSessions.add(session);
+        }
+
+        for (int i = 0;i<allSessions.size();i++){
+            if (allSessions.get(i)!=null){
+                for(int j = 0;j<allHexs.size();j++){
+                    Images sendImg = new Images(allSessions.get(i).getId(), ByteUtil.bytes2Queue(allHexs.get(j)), sendAllWifi[j].getWifiIp());
+                    ImagesCachePool.addImages(allSessions.get(i).getId(), sendImg);
+                    byte[] snedBytes = ByteUtil.queueOutByte(sendImg.getImgQueue(), sendImg.getSize());
+                    sessionMap.sendMsgToOne(sendAllWifi[j].getWifiIp(),IoBuffer.wrap(snedBytes));
+                    IoSession session = sessionMap.getSession(sendAllWifi[j].getWifiIp());
+                    session.setAttribute("beginTime",System.currentTimeMillis());
+                    res.setCode(ResultCommon.SUCCESS_CODE);
+                }
+            }else{
+                res.setCode(ResultCommon.FAILED_CODE);
+            }
+        }
+        return res;
+    }
+
+    /**
+    * 批量发送时的心跳检测
+    * @author Innocence
+    * @date 2019/6/24 002416:30
+    * @param sendAllWifi
+    * @return com.gkqx.bluetoothprice.dto.Result
+    */
+    @RequestMapping("checkAll")
+    @ResponseBody
+    public Result checkAll(@RequestBody ImageToWifi[] sendAllWifi){
+        Result res = new Result();
+        SessionMap sessionMap = SessionMap.newInstance();
+        for (ImageToWifi itw:sendAllWifi) {
+            IoSession session = sessionMap.getSession(itw.getWifiIp());
+            if (session.getAttribute("beginTime")!=null){
+                long beginTime =(Long)session.getAttribute("beginTime");
+                long nowTime = System.currentTimeMillis();
+                if((nowTime- beginTime)>1000*2){
+                    res.setCode(ResultCommon.FAILED_CODE);
+                }
+            }else if(session.getAttribute("successCode")!=null){
+                String successCode = (String)session.getAttribute("successCode");
+                if (successCode.equals("succeed")){
+                    res.setCode(ResultCommon.SUCCESS_CODE);
+                }else if (successCode.equals("failed")){
+                    res.setCode(ResultCommon.FAILED_CODE);
+                }
+            }else if(session.getAttribute("successCode")==null){
+                return null;
+            }
+        }
+        return res;
+    }
+
 }

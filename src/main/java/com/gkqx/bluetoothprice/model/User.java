@@ -1,5 +1,7 @@
 package com.gkqx.bluetoothprice.model;
 
+import java.io.Serializable;
+
 /**
  * @ClassName User
  * @Description 用户实体类
@@ -7,7 +9,9 @@ package com.gkqx.bluetoothprice.model;
  * @Date 2019/5/5 000517:15
  * @Version 1.0
  **/
-public class User {
+public class User implements Serializable {
+
+    private static final long serialVersionUID = -4449849936327891604L;
     private Integer userId;
 
     private String name;

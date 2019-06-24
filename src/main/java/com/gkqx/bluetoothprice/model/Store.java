@@ -1,5 +1,7 @@
 package com.gkqx.bluetoothprice.model;
 
+import java.io.Serializable;
+
 /**
  * @ClassName Store
  * @Description 门店信息实体类
@@ -7,8 +9,9 @@ package com.gkqx.bluetoothprice.model;
  * @Date 2019/5/6 000618:37
  * @Version 1.0
  **/
-public class Store {
+public class Store implements Serializable {
 
+    private static final long serialVersionUID = -5307263122516116116L;
     private Integer storeId;
 
     private String storeName;

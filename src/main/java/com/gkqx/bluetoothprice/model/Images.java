@@ -1,5 +1,6 @@
 package com.gkqx.bluetoothprice.model;
 
+import java.io.Serializable;
 import java.util.Queue;
 
 /**
@@ -9,8 +10,9 @@ import java.util.Queue;
  * @Date 2019/5/8 000811:34
  * @Version 1.0
  **/
-public class Images {
-	// 会话id
+public class Images implements Serializable {
+    private static final long serialVersionUID = -5604862259927994272L;
+    // 会话id
 	private Long sessionID;
 	// wifiIP
 	private String wifiIP;
