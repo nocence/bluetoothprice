@@ -62,5 +62,4 @@ public class AllMsg {
         byte[] sysCopy = new ByteUtil().sysCopy(list);
         return sysCopy;
     }
-
 }

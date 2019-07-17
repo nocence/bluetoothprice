@@ -66,6 +66,15 @@ public class SocketCommon {
     public static final String PIX = "PIX:";
 
     /**
+    * 单点发送和群发图片时，组装进数据流的不同标识
+    * @author Innocence
+    * @date 2019/7/16 001616:30
+    * @param
+    * @return
+    */
+    public static final String POINT_IMG_SIGN = "IMG:";//单点发送
+    public static final String CLUSTER_IMG_SIGN = "CMG:";//群发
+    /**
     * 服务器与硬件之间的响应报文
     * @author Innocence
     * @date 2019/5/27 002709:28

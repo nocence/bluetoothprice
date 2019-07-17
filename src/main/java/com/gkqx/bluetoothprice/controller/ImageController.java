@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -288,37 +287,28 @@ public class ImageController {
     */
     @RequestMapping("sendAll")
     @ResponseBody
-    public Result sendAllImages(@RequestBody ImageToWifi[] sendAllWifi, Images images) throws IOException {
+    public Result sendAllImages(@RequestBody ImageToWifi[] sendAllWifi, Images images) throws IOException, InterruptedException {
         Result res = new Result();
         AllMsg msg = new AllMsg();
         SessionMap sessionMap = SessionMap.newInstance();
-        ArrayList<byte[]> allHexs = new ArrayList<byte[]>();
-        ArrayList<IoSession> allSessions = new ArrayList<>();
         for (int i = 0;i<sendAllWifi.length;i++){
+            String wifiIp = sendAllWifi[i].getWifiIp();
             String imageName = sendAllWifi[i].getImageName();
+            String macAddress = sendAllWifi[i].getMacAddress();
             images.setImgName(imageName);
             Images image = imagesService.getImage(images);
-            byte[] hex = msg.hex(image.getImgPath(), image.getGoodsId(), sendAllWifi[i].getMacAddress());
-            allHexs.add(hex);
-            IoSession session = sessionMap.getSession(sendAllWifi[i].getWifiIp());
-            allSessions.add(session);
-        }
-
-        for (int i = 0;i<allSessions.size();i++){
-            if (allSessions.get(i)!=null){
-                for(int j = 0;j<allHexs.size();j++){
-                    Images sendImg = new Images(allSessions.get(i).getId(), ByteUtil.bytes2Queue(allHexs.get(j)), sendAllWifi[j].getWifiIp());
-                    ImagesCachePool.addImages(allSessions.get(i).getId(), sendImg);
-                    byte[] snedBytes = ByteUtil.queueOutByte(sendImg.getImgQueue(), sendImg.getSize());
-                    sessionMap.sendMsgToOne(sendAllWifi[j].getWifiIp(),IoBuffer.wrap(snedBytes));
-                    IoSession session = sessionMap.getSession(sendAllWifi[j].getWifiIp());
-                    session.setAttribute("beginTime",System.currentTimeMillis());
-                    res.setCode(ResultCommon.SUCCESS_CODE);
-                }
-            }else{
-                res.setCode(ResultCommon.FAILED_CODE);
+            byte[] hex = msg.hex(image.getImgPath(), image.getGoodsId(),macAddress);
+            IoSession session = sessionMap.getSession(wifiIp);
+            if (session!=null){
+                Images sendImage = new Images(session.getId(), ByteUtil.bytes2Queue(hex), macAddress);
+                ImagesCachePool.addImages(session.getId(),sendImage);
+                byte[] sendBytes = ByteUtil.queueOutByte(sendImage.getImgQueue(), sendImage.getSize());
+                sessionMap.sendMsgToOne(wifiIp,IoBuffer.wrap(sendBytes));
+                session.setAttribute("beginTime",System.currentTimeMillis());
             }
+//            Thread.sleep(1000);
         }
+        res.setCode(ResultCommon.SUCCESS_CODE);
         return res;
     }
 
@@ -334,25 +324,29 @@ public class ImageController {
     public Result checkAll(@RequestBody ImageToWifi[] sendAllWifi){
         Result res = new Result();
         SessionMap sessionMap = SessionMap.newInstance();
+        int failedTotal = 0;
+        int sucessTotal = 0;
         for (ImageToWifi itw:sendAllWifi) {
             IoSession session = sessionMap.getSession(itw.getWifiIp());
             if (session.getAttribute("beginTime")!=null){
                 long beginTime =(Long)session.getAttribute("beginTime");
                 long nowTime = System.currentTimeMillis();
                 if((nowTime- beginTime)>1000*2){
-                    res.setCode(ResultCommon.FAILED_CODE);
+                    failedTotal++;
                 }
             }else if(session.getAttribute("successCode")!=null){
                 String successCode = (String)session.getAttribute("successCode");
                 if (successCode.equals("succeed")){
-                    res.setCode(ResultCommon.SUCCESS_CODE);
+                    sucessTotal++;
                 }else if (successCode.equals("failed")){
-                    res.setCode(ResultCommon.FAILED_CODE);
+                    failedTotal++;
                 }
             }else if(session.getAttribute("successCode")==null){
                 return null;
             }
+            res.setCode(ResultCommon.SUCCESS_CODE);
         }
+        res.setMsg("成功发送"+sucessTotal+"张图，"+"失败"+failedTotal+"张！");
         return res;
     }
 

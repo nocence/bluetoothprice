@@ -37,17 +37,31 @@ public class ImageToHex {
             //这里两个byte数组的元素是常量，不允许改动
             byte[] mask = {-128, 64, 32, 16, 8, 4, 2, 1};
             byte[] maskR = {127, -65, -33, -17, -9, -5, -3, -2};
+            /*220*104的显示屏点阵转化函数*/
+//            for (int i = 0; i < imgWidth; i++) {
+//                for (int j = 0; j < imgHeight; j++) {
+//                    adr =(imgHeight-1-j)*bmpLine+i*getBigCount/8;
+//                    bit = (i*getBigCount)%8;
+//                    if ((newCopy[adr] & mask[bit]) != 0) {
+//                        dotBuf[(j/8) * imgWidth + i] |= mask[j%8];
+//                    } else {
+//                        dotBuf[(j/8) * imgWidth + i] &= maskR[j%8];
+//                    }
+//                }
+//            }
+            /*250*122的显示屏点阵转化函数*/
             for (int i = 0; i < imgWidth; i++) {
                 for (int j = 0; j < imgHeight; j++) {
-                    adr =(imgHeight-1-j)*bmpLine+i*getBigCount/8;
-                    bit = (i*getBigCount)%8;
-                    if ((newCopy[adr] & mask[bit]) != 0) {
-                        dotBuf[(j/8) * imgWidth + i] |= mask[j%8];
+                    adr =(imgHeight-1-j)*bmpLine + (imgWidth-1-i)*getBigCount/8;
+                    bit = ((imgWidth-1-i)*getBigCount)%8;
+                    if ((newCopy[adr] & mask[bit]) == 0) {
+                        dotBuf[(imgWidth-1-i)*dotLine + j/8] &= mask[j%8];
                     } else {
-                        dotBuf[(j/8) * imgWidth + i] &= maskR[j%8];
+                        dotBuf[(imgWidth-1-i)*dotLine + j/8] |= maskR[j%8];
                     }
                 }
             }
+
 
             bos.write(dotBuf, 0, util.getImgWidth(intoFile) * util.widFianl(intoFile));
             result = bos.toByteArray();
