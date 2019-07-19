@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 /**
  * @ClassName ImageToHex2
- * @Description 将图片数据转化成点阵数据，传送过去的流就小很多，该方法留着备用
+ * @Description 将图片数据转化成点阵数据，传送过去的流就小很多
  * @Author Innocence
  * @Date 2019/4/25 002511:54
  * @Version 1.0
@@ -55,9 +55,9 @@ public class ImageToHex {
                     adr =(imgHeight-1-j)*bmpLine + (imgWidth-1-i)*getBigCount/8;
                     bit = ((imgWidth-1-i)*getBigCount)%8;
                     if ((newCopy[adr] & mask[bit]) == 0) {
-                        dotBuf[(imgWidth-1-i)*dotLine + j/8] &= mask[j%8];
+                        dotBuf[(imgWidth-1-i)*dotLine + j/8] &= maskR[j%8];
                     } else {
-                        dotBuf[(imgWidth-1-i)*dotLine + j/8] |= maskR[j%8];
+                        dotBuf[(imgWidth-1-i)*dotLine + j/8] |= mask[j%8];
                     }
                 }
             }

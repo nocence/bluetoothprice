@@ -7,12 +7,15 @@ import com.gkqx.bluetoothprice.mina.SessionMap;
 import com.gkqx.bluetoothprice.model.*;
 import com.gkqx.bluetoothprice.service.*;
 import com.gkqx.bluetoothprice.util.byteUtil.ByteUtil;
+import com.gkqx.bluetoothprice.util.connectionUtil.DuplicateRemoveUtil;
 import com.gkqx.bluetoothprice.util.fileUtil.FileUtil;
 import com.gkqx.bluetoothprice.util.imgUtil.DrawImg;
+import com.gkqx.bluetoothprice.util.redisUtil.RedisUtil;
 import com.gkqx.bluetoothprice.util.socketUtil.AllMsg;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,7 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static com.gkqx.bluetoothprice.common.socketComon.SocketCommon.IMG_CACHE;
 
 /**
  * @ClassName ImageController
@@ -48,6 +55,10 @@ public class ImageController {
 
     @Autowired
     private TagsService tagsService;
+
+    //控制层调用RedisTemplate
+    @Autowired
+    private RedisTemplate redisTemplate;
     /**
     * 处理生成图片的请求
     * @author Innocence
@@ -287,28 +298,68 @@ public class ImageController {
     */
     @RequestMapping("sendAll")
     @ResponseBody
-    public Result sendAllImages(@RequestBody ImageToWifi[] sendAllWifi, Images images) throws IOException, InterruptedException {
+    public Result sendAllImages(@RequestBody ImageToWifi[] sendAllWifi, Images images) throws IOException {
+        System.out.println("群发请求");
         Result res = new Result();
         AllMsg msg = new AllMsg();
-        SessionMap sessionMap = SessionMap.newInstance();
+        //第一步，根据传入的数据里面指定的ip获取session,存入list
+        ArrayList<IoSession> ioSessions = new ArrayList<>();
+        ArrayList<String> getIps = new ArrayList<>();
         for (int i = 0;i<sendAllWifi.length;i++){
             String wifiIp = sendAllWifi[i].getWifiIp();
-            String imageName = sendAllWifi[i].getImageName();
-            String macAddress = sendAllWifi[i].getMacAddress();
-            images.setImgName(imageName);
-            Images image = imagesService.getImage(images);
-            byte[] hex = msg.hex(image.getImgPath(), image.getGoodsId(),macAddress);
-            IoSession session = sessionMap.getSession(wifiIp);
-            if (session!=null){
-                Images sendImage = new Images(session.getId(), ByteUtil.bytes2Queue(hex), macAddress);
-                ImagesCachePool.addImages(session.getId(),sendImage);
-                byte[] sendBytes = ByteUtil.queueOutByte(sendImage.getImgQueue(), sendImage.getSize());
-                sessionMap.sendMsgToOne(wifiIp,IoBuffer.wrap(sendBytes));
-                session.setAttribute("beginTime",System.currentTimeMillis());
-            }
-//            Thread.sleep(1000);
+            getIps.add(wifiIp);
         }
-        res.setCode(ResultCommon.SUCCESS_CODE);
+        //利用LinkedHashSet去除重复数据
+        DuplicateRemoveUtil removeUtil = new DuplicateRemoveUtil();
+        removeUtil.getSingle(getIps);
+        SessionMap sessionMap = SessionMap.newInstance();
+        for (int i = 0;i<getIps.size();i++){
+            IoSession session = sessionMap.getSession(getIps.get(i));
+            if (session!=null){
+                ioSessions.add(session);
+            }
+        }
+        //第二步，将要发往同一ip的图片组装进一个缓存
+        List<Long> maps = new ArrayList<>();
+        for(int i = 0;i<ioSessions.size();i++){
+            for (int j = 0;j<sendAllWifi.length;j++){
+                //组装单张图片
+                String imageName = sendAllWifi[j].getImageName();
+                images.setImgName(imageName);
+                Images image = imagesService.getImage(images);
+                byte[] hex = msg.hex(image.getImgPath(), image.getGoodsId(), sendAllWifi[j].getMacAddress());
+                //如果list里面的session与sessionmap里面根据WiFiIP获取的session相等且不为空，则对应组装图片
+                if (sessionMap.getSession(sendAllWifi[j].getWifiIp()).equals(ioSessions.get(i))
+                        && sessionMap.getSession(sendAllWifi[j].getWifiIp())!= null){
+                    // 组装待发送图片
+                    Images sendImg = new Images(ioSessions.get(i).getId(), ByteUtil.bytes2Queue(hex), sendAllWifi[j].getWifiIp());
+
+                    // 图片加入发送redis缓存
+                    redisTemplate.opsForValue().set(ioSessions.get(i).getId(),sendImg);
+//                    Map map = ImagesCachePool.addImages(ioSessions.get(i).getId(), sendImg);
+                    maps.add(ioSessions.get(i).getId());
+                }
+            }
+        }
+        System.out.println("缓存数组长度："+maps.size());
+        if (!maps.isEmpty())redisTemplate.opsForValue().set(IMG_CACHE,maps);
+        for (int i=0;i<ioSessions.size();i++) {
+            for (int j = 0;j<maps.size();j++){
+                Images sendImage = (Images) maps.get(j).get(ioSessions.get(i).getId());
+                if (sendImage != null){
+                    // 获取实际发送数据
+                    byte[] snedBytes = ByteUtil.queueOutByte(sendImage.getImgQueue(), sendImage.getSize());
+                    // 发送图片
+                    sessionMap.sendMsgToOne(getIps.get(i), IoBuffer.wrap(snedBytes));
+                    maps.remove(j);
+                    j--;
+                    // 将发送时的时间存入session，便于判断响应超时
+                    ioSessions.get(i).setAttribute("beginTime",System.currentTimeMillis());
+                    res.setCode(ResultCommon.SUCCESS_CODE);
+                }
+            }
+        }
+
         return res;
     }
 
