@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * @Version 1.0
  **/
 public class AllMsg {
-    public byte[] hex(String filePath,String goodsId,String macAddress) throws FileNotFoundException {
+    public byte[] hex(String filePath,String goodsId,String macAddress,String imgSign) throws FileNotFoundException {
         ArrayList<byte[]> list = new ArrayList<>();
         //获取图片的点阵数据
         byte[] bytes = new ImageToHex().toHex(filePath);
@@ -25,7 +25,7 @@ public class AllMsg {
         //将对应的标识符添加到小数组
         for (int i=0;i<splitBytes.length;i++){
             //流开头的标识符
-            byte[] img = "IMG:".getBytes();
+            byte[] img = imgSign.getBytes();
             //商品id
             byte[] goods = goodsId.getBytes();
             //mac地址

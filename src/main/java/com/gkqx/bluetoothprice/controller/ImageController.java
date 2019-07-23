@@ -14,7 +14,6 @@ import com.gkqx.bluetoothprice.util.socketUtil.AllMsg;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import static com.gkqx.bluetoothprice.common.socketComon.SocketCommon.IMG_CACHE;
+import static com.gkqx.bluetoothprice.common.socketComon.SocketCommon.*;
 
 /**
  * @ClassName ImageController
@@ -56,9 +55,7 @@ public class ImageController {
     @Autowired
     private TagsService tagsService;
 
-    //控制层调用RedisTemplate
-    @Autowired
-    private RedisTemplate redisTemplate;
+
     /**
     * 处理生成图片的请求
     * @author Innocence
@@ -202,7 +199,7 @@ public class ImageController {
         Images image = imagesService.getImage(images);
         System.out.println("获取图片路径："+image.getImgPath());
         AllMsg msg = new AllMsg();
-        byte[] hex = msg.hex(image.getImgPath(),image.getGoodsId(),imageToWifi.getMacAddress());
+        byte[] hex = msg.hex(image.getImgPath(),image.getGoodsId(),imageToWifi.getMacAddress(),POINT_IMG_SIGN);
 
         SessionMap sessionMap = SessionMap.newInstance();
         IoSession session = sessionMap.getSession(imageToWifi.getWifiIp());
@@ -327,7 +324,7 @@ public class ImageController {
                 String imageName = sendAllWifi[j].getImageName();
                 images.setImgName(imageName);
                 Images image = imagesService.getImage(images);
-                byte[] hex = msg.hex(image.getImgPath(), image.getGoodsId(), sendAllWifi[j].getMacAddress());
+                byte[] hex = msg.hex(image.getImgPath(), image.getGoodsId(), sendAllWifi[j].getMacAddress(),CLUSTER_IMG_SIGN);
                 //如果list里面的session与sessionmap里面根据WiFiIP获取的session相等且不为空，则对应组装图片
                 if (sessionMap.getSession(sendAllWifi[j].getWifiIp()).equals(ioSessions.get(i))
                         && sessionMap.getSession(sendAllWifi[j].getWifiIp())!= null){
