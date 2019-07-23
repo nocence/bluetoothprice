@@ -4,6 +4,7 @@ import com.gkqx.bluetoothprice.model.Images;
 
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Queue;
 
 /**
  * 发送图片缓存池
@@ -12,7 +13,7 @@ import java.util.Map;
  */
 public class ImagesCachePool {
 	private static Map<Long, Images> tab = new Hashtable<Long, Images>();
-	
+	private static Map<String,Queue> imgs = new Hashtable<String,Queue>();
 	/**
 	 * 根据会话获取图片对象
 	 * @param sessionID
@@ -31,10 +32,13 @@ public class ImagesCachePool {
 		tab.remove(sessionID);
 	}
 	
-	
-	
-	
-	
-	
-	
+    public static void addImagesQueue(String key, Queue images){
+        imgs.put(key,images);
+    }
+    public static Queue<Images> getImagesQueue(String key){
+	    return imgs.get(key);
+    }
+    public static void removeImagesQueue(String key){
+	    imgs.remove(key);
+    }
 }

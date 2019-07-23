@@ -9,7 +9,6 @@ package com.gkqx.bluetoothprice.mina;
 **/
 
 import com.gkqx.bluetoothprice.cache.ImagesCachePool;
-import com.gkqx.bluetoothprice.common.socketComon.SocketCommon;
 import com.gkqx.bluetoothprice.model.Images;
 import com.gkqx.bluetoothprice.model.Tags;
 import com.gkqx.bluetoothprice.model.Wifis;
@@ -24,14 +23,11 @@ import org.apache.mina.transport.socket.SocketSessionConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.Queue;
 
 import static com.gkqx.bluetoothprice.common.socketComon.SocketCommon.*;
 
@@ -50,9 +46,7 @@ public class ServerHandler extends IoHandlerAdapter {
     @Autowired
     private WifisService wifisService;
 
-    //控制层调用RedisTemplate
-    @Autowired
-    private RedisTemplate redisTemplate;
+
 
     private static ServerHandler serverHandler ;
 
@@ -62,7 +56,6 @@ public class ServerHandler extends IoHandlerAdapter {
         serverHandler = this;
         serverHandler.tagsService = this.tagsService;
         serverHandler.wifisService = this.wifisService;
-        serverHandler.redisTemplate = this.redisTemplate;
         //3.调用时需要加前缀 如 serverHandler.tbBoxService
     }
 
@@ -144,7 +137,7 @@ public class ServerHandler extends IoHandlerAdapter {
             //判定之后把session移除，否则beginTime一直存在，当发送总时长超过规定时间，剩下的数据就发送不了
             session.removeAttribute("beginTime");
         }
-        //主要是判定关于图片发送时，硬软件端的通信
+        //主要是判定关于图片单点发送时，硬软件端的通信
         if(stringHex.equals(SUCCESS_RETURN)&& flag==true){// 收到OK报文 持续发送图片
             if (session.getAttribute("successCode")!=null)session.removeAttribute("successCode");
             System.out.println("收到客户端OK消息，继续发送图片......");
@@ -161,48 +154,21 @@ public class ServerHandler extends IoHandlerAdapter {
             }
             if (isSend==true ||session.getAttribute("secondTime")==null){
                 SessionMap sessionMap = SessionMap.newInstance();
+                //单点发送
                 // 从缓存池获取对应会话待发送图片
-                Boolean hasKey = serverHandler.redisTemplate.hasKey(IMG_CACHE);
-                if (hasKey == true){//说明redis缓存里有数据，是群发
-                    List sendImgsCache =(ArrayList<Map>) serverHandler.redisTemplate.opsForValue().get(SocketCommon.IMG_CACHE);
-                    logger.info("redis缓存数组长度"+sendImgsCache.size());
-                    if (!sendImgsCache.isEmpty()){
-                        for (int i = 0;i<sendImgsCache.size();i++) {
-                            //得到图片缓存池的map
-                            ImagesCachePool imgCache = (ImagesCachePool)sendImgsCache.get(i);
-                            //得到要发送的图片缓存
-
-//                            Images img = (Images)imgCache.get(session.getId());
-                            byte[] snedAllBytes = ByteUtil.queueOutByte(img.getImgQueue(), img.getSize());
-                            if( snedAllBytes.length > 0) {
-                                sessionMap.sendMsgToOne(img.getWifiIP(), IoBuffer.wrap(snedAllBytes));
-                                //如果session存了值，要清空，否则上面的超时判断会一直为false
-                                if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
-                                session.setAttribute("secondTime",System.currentTimeMillis());
-                            }else {// 图片发送完成
-                                // 清除缓存
-                                ImagesCachePool.removeImages( img.getSessionID() );
-                                // 发送成功之后存入成功标识符，给发请请求的controller判定是否发送成功
-                                session.setAttribute("successCode","succeed");
-                            }
-                        }
-                    }
-                }else{
-                    //单点发送
-                    Images sendImg = ImagesCachePool.getImages(session.getId());
-                    // 获取实际发送数据大小
-                    byte[] snedBytes = ByteUtil.queueOutByte(sendImg.getImgQueue(), sendImg.getSize());
-                    if( snedBytes.length > 0) {
-                        sessionMap.sendMsgToOne(sendImg.getWifiIP(), IoBuffer.wrap(snedBytes));
-                        //如果session存了值，要清空，否则上面的超时判断会一直为false
-                        if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
-                        session.setAttribute("secondTime",System.currentTimeMillis());
-                    }else {// 图片发送完成
-                        // 清除缓存
-                        ImagesCachePool.removeImages(sendImg.getSessionID());
-                        // 发送成功之后存入成功标识符，给发请请求的controller判定是否发送成功
-                        session.setAttribute("successCode", "succeed");
-                    }
+                Images sendImg = ImagesCachePool.getImages(session.getId());
+                // 获取实际发送数据大小
+                byte[] snedBytes = ByteUtil.queueOutByte(sendImg.getImgQueue(), sendImg.getSize());
+                if( snedBytes.length > 0) {
+                    sessionMap.sendMsgToOne(sendImg.getWifiIP(), IoBuffer.wrap(snedBytes));
+                    //如果session存了值，要清空，否则上面的超时判断会一直为false
+                    if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
+                    session.setAttribute("secondTime",System.currentTimeMillis());
+                }else {// 图片发送完成
+                    // 清除缓存
+                    ImagesCachePool.removeImages(sendImg.getSessionID());
+                    // 发送成功之后存入成功标识符，给发请请求的controller判定是否发送成功
+                    session.setAttribute("successCode", "succeed");
                 }
             }else {
                 if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
@@ -212,19 +178,90 @@ public class ServerHandler extends IoHandlerAdapter {
             //收到ERROR消息或者超时，暂停发送，清除缓存并返回失败标识
             //因为还可能收到其他的无需处理的请求，所以这里的判定写准确，以免被其他消息干扰
             Images sendImg = ImagesCachePool.getImages(session.getId());
-//            ImagesCachePool.removeImages( sendImg.getSessionID() );
+            ImagesCachePool.removeImages( sendImg.getSessionID() );
             if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
             session.setAttribute("successCode","failed");
         }else if(stringHex.equals(IMG_END)){
             //图片发送完成
             Images sendImg = ImagesCachePool.getImages(session.getId());
-//            ImagesCachePool.removeImages( sendImg.getSessionID());
+            ImagesCachePool.removeImages( sendImg.getSessionID());
             session.setAttribute("successCode","succeed");
             //将二次验证超时的session清除，否则第二次发送图片就会false
             if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
         }
+        //群发图片的消息处理
+        if (stringHex.equals(ALL_SUCCESS_RETURN) && flag==true){// 收到OK报文 持续发送图片
+            if (session.getAttribute("successCode")!=null)session.removeAttribute("successCode");
+            System.out.println("收到客户端OK消息，继续发送图片......");
+            //这里判定从第二次收到响应之后，有没有超时
+            long lastTime = System.currentTimeMillis();
+            boolean isSend = false;
+            if (session.getAttribute("secondTime")!=null){
+                long secondTime = (Long)session.getAttribute("secondTime");
+                if ((lastTime-secondTime)>1000*10){
+                    isSend=false;
+                }else{
+                    isSend=true;
+                }
+            }
+            if (isSend == true || session.getAttribute("secondTime")==null){
+                SessionMap sessionMap = SessionMap.newInstance();
+                // 从缓存池获取对应会话待发送图片,如果缓存池里有数据，直接发。
+                // 如果没有，则去拿缓存队列里的数据
+                Images sendImg = ImagesCachePool.getImages(session.getId());
+                if (sendImg == null){
+                    Queue<Images> imagesQueue = ImagesCachePool.getImagesQueue(IMG_CACHE);
+                    Images getQueueImages = imagesQueue.poll();
+                    ImagesCachePool.addImages(getQueueImages.getSessionID(),getQueueImages);
+                    ImagesCachePool.addImagesQueue(IMG_CACHE,imagesQueue);
+                    byte[] queueOutByte = ByteUtil.queueOutByte(getQueueImages.getImgQueue(), getQueueImages.getSize());
+                    sessionMap.sendMsgToOne(getQueueImages.getWifiIP(),IoBuffer.wrap(queueOutByte));
+                    //如果session存了值，要清空，否则上面的超时判断会一直为false
+                    if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
+                    session.setAttribute("secondTime",System.currentTimeMillis());
 
-
+                }else{
+                    byte[] outByte = ByteUtil.queueOutByte(sendImg.getImgQueue(), sendImg.getSize());
+                    if (outByte.length>0){
+                        sessionMap.sendMsgToOne(sendImg.getWifiIP(), IoBuffer.wrap(outByte));
+                        if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
+                        session.setAttribute("secondTime",System.currentTimeMillis());
+                    }else{
+                        // 清除缓存
+                        ImagesCachePool.removeImages(sendImg.getSessionID());
+                    }
+                }
+            }else{
+                if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
+            }
+        }else if (stringHex.equals(ALL_FEILED_RETURN) || flag == false){
+            SessionMap sessionMap = SessionMap.newInstance();
+            //收到ERROR消息或者超时，暂停当前图片发送，清除当前缓存并发下一张
+            Images sendImg = ImagesCachePool.getImages(session.getId());
+            ImagesCachePool.removeImages(sendImg.getSessionID());
+            //拿到缓存队列的下一张图片并发送
+            if (ImagesCachePool.getImagesQueue(IMG_CACHE) != null){
+                Queue<Images> imagesQueue = ImagesCachePool.getImagesQueue(IMG_CACHE);
+                Images getQueueImages = imagesQueue.poll();
+                ImagesCachePool.addImages(getQueueImages.getSessionID(),getQueueImages);
+                ImagesCachePool.addImagesQueue(IMG_CACHE,imagesQueue);
+                byte[] queueOutByte = ByteUtil.queueOutByte(getQueueImages.getImgQueue(), getQueueImages.getSize());
+                sessionMap.sendMsgToOne(getQueueImages.getWifiIP(),IoBuffer.wrap(queueOutByte));
+                //如果session存了值，要清空，否则上面的超时判断会一直为false
+                if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
+                session.setAttribute("secondTime",System.currentTimeMillis());
+            }else{
+                if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
+            }
+        }else if (stringHex.equals(ALL_IMG_END)){
+            //图片发送完成
+            Images sendImg = ImagesCachePool.getImages(session.getId());
+            ImagesCachePool.removeImages( sendImg.getSessionID());
+            ImagesCachePool.removeImagesQueue(IMG_CACHE);
+            session.setAttribute("successCode","succeed");
+            //将二次验证超时的session清除，否则第二次发送图片就会false
+            if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
+        }
         logger.info("[收到消息,来自："+hostAddress+"]" + stringHex);
 
     }

@@ -73,7 +73,7 @@ public class SocketCommon {
     * @return
     */
     public static final String POINT_IMG_SIGN = "IMG:";//单点发送
-    public static final String CLUSTER_IMG_SIGN = "CMG:";//群发
+    public static final String CLUSTER_IMG_SIGN = "AMG:";//群发
     /**
     * 服务器与硬件之间的响应报文
     * @author Innocence
@@ -84,6 +84,16 @@ public class SocketCommon {
     public static final String IMG_END = "ACK:02";//硬件端返回的图片接收完成
     public static final String NUM_ERROR = " ACK:03";//数据包顺序不对
 
+    /**
+    * 群发图片时的响应报文
+    * @author Innocence
+    * @date 2019/7/23 002314:51
+    * @param
+    * @return
+    */
+    public static final String ALL_SUCCESS_RETURN = "AAK:00";
+    public static final String ALL_FEILED_RETURN = "AAK:01";
+    public static final String ALL_IMG_END = "AAK:02";
     /**
     * redis缓存群发图片的键名
     * @author Innocence
