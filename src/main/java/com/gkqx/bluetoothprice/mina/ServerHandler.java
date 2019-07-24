@@ -46,8 +46,6 @@ public class ServerHandler extends IoHandlerAdapter {
     @Autowired
     private WifisService wifisService;
 
-
-
     private static ServerHandler serverHandler ;
 
     //2通过@PostConstruct实现初始化bean之前进行的操作
