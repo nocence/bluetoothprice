@@ -27,11 +27,8 @@ public class Task implements Runnable{
 
     @Override
     public void run() {
-
         try{
-
             dis = new DataInputStream(socket.getInputStream());
-
             // 文件名和长度
             String fileName = dis.readUTF();
             long fileLength = dis.readLong();
@@ -41,7 +38,6 @@ public class Task implements Runnable{
             }
             File file = new File(directory.getAbsolutePath() + File.separatorChar + fileName);
             fos = new FileOutputStream(file);
-
             // 开始接收文件
             byte[] bytes = new byte[1024];
             int length = 0;
@@ -63,6 +59,5 @@ public class Task implements Runnable{
                 e.printStackTrace();
             }
         }
-
     }
 }

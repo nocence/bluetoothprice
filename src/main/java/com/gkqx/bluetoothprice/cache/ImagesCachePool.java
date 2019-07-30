@@ -27,7 +27,6 @@ public class ImagesCachePool {
 		tab.put(sessionID, img);
 	}
 	
-	
 	public static void removeImages(Long sessionID) {
 		tab.remove(sessionID);
 	}
@@ -35,9 +34,11 @@ public class ImagesCachePool {
     public static void addImagesQueue(String key, Queue images){
         imgs.put(key,images);
     }
+
     public static Queue<Images> getImagesQueue(String key){
 	    return imgs.get(key);
     }
+
     public static void removeImagesQueue(String key){
 	    imgs.remove(key);
     }

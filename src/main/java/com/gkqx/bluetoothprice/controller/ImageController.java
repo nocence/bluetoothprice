@@ -74,7 +74,7 @@ public class ImageController {
         DrawImg drawImg = new DrawImg();
         String imgPath = null;
         try {
-            imgPath = drawImg .DrawInfo(goods, path);
+            imgPath = drawImg . DrawInfo(goods, path);
             //将图片信息存入数据库
             //获取图片名称
             String imgName = imgPath.substring(imgPath.lastIndexOf("\\") + 1);
