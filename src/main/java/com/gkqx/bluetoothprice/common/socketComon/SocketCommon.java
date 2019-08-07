@@ -95,7 +95,7 @@ public class SocketCommon {
     public static final String ALL_FEILED_RETURN = "AAK:01";
     public static final String ALL_IMG_END = "AAK:02";
     /**
-    * redis缓存群发图片的键名
+    * 缓存群发图片的键名
     * @author Innocence
     * @date 2019/7/18 001816:12
     * @param

@@ -230,6 +230,28 @@ public class ServerHandler extends IoHandlerAdapter {
                 }
             }else{
                 if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
+                SessionMap sessionMap = SessionMap.newInstance();
+                //收到ERROR消息或者超时，暂停当前图片发送，清除当前缓存并发下一张
+                if (ImagesCachePool.getImages(session.getId())!=null){
+                    ImagesCachePool.removeImages(session.getId());
+                }
+                //拿到缓存队列的下一张图片并发送
+                if (ImagesCachePool.getImagesQueue(IMG_CACHE) != null){
+                    Queue<Images> imagesQueue = ImagesCachePool.getImagesQueue(IMG_CACHE);
+                    Images getQueueImages = imagesQueue.poll();
+                    ImagesCachePool.addImages(getQueueImages.getSessionID(),getQueueImages);
+                    byte[] queueOutByte = ByteUtil.queueOutByte(getQueueImages.getImgQueue(), getQueueImages.getSize());
+                    sessionMap.sendMsgToOne(getQueueImages.getWifiIP(),IoBuffer.wrap(queueOutByte));
+                    //如果session存了值，要清空，否则上面的超时判断会一直为false
+                    if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
+                    session.setAttribute("secondTime",System.currentTimeMillis());
+                }else{
+                    if (ImagesCachePool.getImages(session.getId())!=null){
+                        Images sendImg = ImagesCachePool.getImages(session.getId());
+                        ImagesCachePool.removeImages( sendImg.getSessionID());
+                    }
+                    ImagesCachePool.removeImagesQueue(IMG_CACHE);
+                }
             }
         }else if (stringHex.equals(ALL_FEILED_RETURN) || flag == false){
             SessionMap sessionMap = SessionMap.newInstance();

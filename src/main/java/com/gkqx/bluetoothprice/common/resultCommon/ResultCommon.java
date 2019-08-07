@@ -1,6 +1,5 @@
 package com.gkqx.bluetoothprice.common.resultCommon;
 
-import org.omg.CORBA.PUBLIC_MEMBER;
 
 /**
  * @ClassName ResultCommon
