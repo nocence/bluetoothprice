@@ -218,6 +218,19 @@ public class ByteUtil {
         return allFianl;
     }
     /**
+    * 截取指定长度的byte数组
+    * @author Innocence
+    * @date 2019/8/8 000815:15
+    * @param
+    * @return
+    */
+    public byte[] subByte(byte[] oldByte,int begin,int length){
+        byte[] newByte = new byte[length];
+        System.arraycopy(oldByte,begin,newByte,0,length);
+        return newByte;
+    }
+
+    /**
      * 将byte转换成int，然后利用Integer.toHexString(int)来转换成16进制字符串
      * @author Innocence
      * @date 2019/4/26 002617:18

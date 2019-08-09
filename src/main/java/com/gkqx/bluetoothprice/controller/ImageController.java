@@ -385,7 +385,7 @@ public class ImageController {
             }
             res.setCode(ResultCommon.SUCCESS_CODE);
         }
-        res.setMsg("成功发送"+sucessTotal+"张图，"+"失败"+failedTotal+"张！");
+        res.setMsg("成功发送"+sucessTotal+"张图，失败"+failedTotal+"张！");
         return res;
     }
 

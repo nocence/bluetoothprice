@@ -17,9 +17,9 @@
     <select id="getAllTagsToFont" parameterType="com.gkqx.bluetoothprice.model.FontTag" resultType="com.gkqx.bluetoothprice.model.FontTag">
         select t.mac_address macAddress,s.store_name storeName,w.wifi_ip wifiIp,g.goods_name goodsName,g.goods_price goodsPrice,g.goods_specs goodsSpecs,g.goods_unit goodsUnit,t.type type
         from tags t
-        join wifis w on t.wifi_id = w.wifi_id
-        join stores s on w.store_id = s.store_id
-        join goods g on t.goods_id = g.goods_id
+        left join wifis w on t.wifi_id = w.wifi_id
+        left join stores s on w.store_id = s.store_id
+        left join goods g on t.goods_id = g.goods_id
         where 1=1
         <if test="storeName!=null and storeName!=''">
             and s.store_name = #{storeName}
@@ -37,7 +37,7 @@
         <if test="wifiIp!=null and wifiIp != ''">
             and w.wifi_ip =#{wifiIp}
         </if>
-        and t.type = 1;
+
     </select>
     <!--更新tags的商品ID-->
     <update id="updateTagOfGoodsId" parameterType="com.gkqx.bluetoothprice.model.Tags" keyProperty="tagId" useGeneratedKeys="true">
@@ -46,7 +46,10 @@
             <if test="goodsId != null">
                 goods_id = #{goodsId,jdbcType = VARCHAR},
             </if>
+            <if test="type != null">
+                type = #{type,jdbcType = INTEGER}
+            </if>
         </set>
-        where mac_address = #{MacAddress}
+        where mac_address = #{macAddress}
     </update>
 </mapper>
