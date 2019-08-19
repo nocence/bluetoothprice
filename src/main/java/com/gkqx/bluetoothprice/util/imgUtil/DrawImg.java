@@ -64,45 +64,57 @@ public class DrawImg {
         String midLeft4 = "编码："+goods.getGoodsCode();
         g2.drawString(midLeft4,0,82+midLeftAscent);
 
-        //截取价格部分的整数和小数部分
-        String price = goods.getGoodsPrice();
-        String integerPrice = price.substring(0, price.lastIndexOf(".")+1 );
-        String doublePrice = price.substring(price.lastIndexOf(".") + 1);
-        //右边价格整数部分
-        g2.fillRect(oldWidth/2,20,oldWidth/4,40);
+        //右边价格部分
+        String price = goods.getGoodsPrice()+"元";
+        g2.fillRect(oldWidth/2,20,oldWidth/2,40);
         g2.setColor(Color.white);
-        g2.fillRect(oldWidth/2,20,oldWidth/4,40);
+        g2.fillRect(oldWidth/2,20,oldWidth/2,40);
         g2.setFont(new Font("幼圆",Font.BOLD,36));
         FontDesignMetrics midRightMetrics = FontDesignMetrics.getMetrics(new Font("幼圆", Font.BOLD, 36));
         g2.setColor(Color.black);
-        String midRight1 = integerPrice;
-        int midRight1Width = midRightMetrics.stringWidth(midRight1);
+        int midRight1Width = midRightMetrics.stringWidth(price);
         int midRight1Ascent = oldWidth/2+(oldHeight/2-midRight1Width)/2;
-        g2.drawString(midRight1,midRight1Ascent,20+midRightMetrics.getAscent());
+        g2.drawString(price,midRight1Ascent,22+midRightMetrics.getAscent());
 
-        //右边价格小数和单位部分
-        g2.fillRect(3*oldWidth/4,20,oldWidth-oldWidth/2-oldWidth/4,40);
-        g2.setColor(Color.white);
-        g2.fillRect(3*oldWidth/4,20,oldWidth-oldWidth/2-oldWidth/4,40);
-        g2.setFont(new Font("宋体",Font.PLAIN,20));
-        FontDesignMetrics midRight1Metrics = FontDesignMetrics.getMetrics(new Font("宋体", Font.PLAIN, 24));
-        int midRight1MetricsHeight = midRight1Metrics.getHeight();
-        g2.setColor(Color.black);
-        String midRight2 = doublePrice;
-        String midRight3 = "元";
-        g2.drawString(midRight2,3*oldWidth/4,20+midRight1Metrics.getAscent());
-        g2.drawString(midRight3,3*oldWidth/4+midRight1Metrics.stringWidth(midRight2),midRight1Metrics.getAscent()+midRight1MetricsHeight-3);
+//        //截取价格部分的整数和小数部分
+//        String price = goods.getGoodsPrice();
+//        String integerPrice = price.substring(0, price.lastIndexOf(".")+1 );
+//        String doublePrice = price.substring(price.lastIndexOf(".") + 1);
+//        //右边价格整数部分
+//        g2.fillRect(oldWidth/2,20,oldWidth/4,40);
+//        g2.setColor(Color.white);
+//        g2.fillRect(oldWidth/2,20,oldWidth/4,40);
+//        g2.setFont(new Font("幼圆",Font.BOLD,36));
+//        FontDesignMetrics midRightMetrics = FontDesignMetrics.getMetrics(new Font("幼圆", Font.BOLD, 36));
+//        g2.setColor(Color.black);
+//        String midRight1 = integerPrice;
+//        int midRight1Width = midRightMetrics.stringWidth(midRight1);
+//        int midRight1Ascent = oldWidth/2+(oldHeight/2-midRight1Width)/2;
+//        g2.drawString(midRight1,midRight1Ascent,20+midRightMetrics.getAscent());
+//
+//        //右边价格小数和单位部分
+//        g2.fillRect(3*oldWidth/4,20,oldWidth-oldWidth/2-oldWidth/4,40);
+//        g2.setColor(Color.white);
+//        g2.fillRect(3*oldWidth/4,20,oldWidth-oldWidth/2-oldWidth/4,40);
+//        g2.setFont(new Font("宋体",Font.PLAIN,20));
+//        FontDesignMetrics midRight1Metrics = FontDesignMetrics.getMetrics(new Font("宋体", Font.PLAIN, 24));
+//        int midRight1MetricsHeight = midRight1Metrics.getHeight();
+//        g2.setColor(Color.black);
+//        String midRight2 = doublePrice;
+//        String midRight3 = "元";
+//        g2.drawString(midRight2,3*oldWidth/4,20+midRight1Metrics.getAscent());
+//        g2.drawString(midRight3,3*oldWidth/4+midRight1Metrics.stringWidth(midRight2),midRight1Metrics.getAscent()+midRight1MetricsHeight-3);
 
         //右边的编码和条形码部分（条形码还没画）
         g2.fillRect(oldWidth/2,60,oldWidth/2,40);
         g2.setColor(Color.white);
         g2.fillRect(oldWidth/2,60,oldWidth/2,40);
-        g2.setFont(new Font("宋体",Font.PLAIN,14));
+        g2.setFont(new Font("宋体",Font.PLAIN,18));
         g2.setColor(Color.black);
         String midRightDown = goods.getGoodsBarcode();
-        FontDesignMetrics midRightDownMetrics = FontDesignMetrics.getMetrics(new Font("宋体", Font.PLAIN, 14));
+        FontDesignMetrics midRightDownMetrics = FontDesignMetrics.getMetrics(new Font("宋体", Font.PLAIN, 18));
         int stringWidth = midRightDownMetrics.stringWidth(midRightDown);
-        g2.drawString(midRightDown,oldWidth/2+(oldWidth/2-stringWidth)/2,60+midRightDownMetrics.getAscent());
+        g2.drawString(midRightDown,oldWidth/2,70+midRightDownMetrics.getAscent());
 
         //最下面的监督和举报电话
         g2.fillRect(0,102,oldWidth,20);

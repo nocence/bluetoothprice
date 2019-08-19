@@ -185,19 +185,18 @@ public class ServerHandler extends IoHandlerAdapter {
             ImagesCachePool.removeImages( sendImg.getSessionID() );
             if (session.getAttribute("secondTime")!=null)session.removeAttribute("secondTime");
             session.setAttribute("successCode","failed");
-        }else if(stringHex.equals(IMG_END)){
+        }else if(stringHex.contains(IMG_END)){
+            System.out.println("图片发送完成："+stringHex);
             //图片发送完成
             Images sendImg = ImagesCachePool.getImages(session.getId());
             //发送完成后修改价签状态
-            byte[] queueOutByte = util.queueOutByte(sendImg.getImgQueue(), sendImg.getSize());
-            byte[] subByte = util.subByte(queueOutByte, 4, 28);
-            String subStr = util.toStringHex(util.bytesToHexString(subByte));
+            String goodid = stringHex.substring(6, 21);
+            String mac = stringHex.substring(22);
             Tags tags = new Tags();
-            tags.setGoodsId(subStr.substring(0,16));
-            tags.setMacAddress(subStr.substring(16));
+            tags.setGoodsId(goodid);
+            tags.setMacAddress(mac);
             tags.setType(1);
             serverHandler.tagsService.updateTagOfGoodsId(tags);
-
             ImagesCachePool.removeImages( sendImg.getSessionID());
             session.setAttribute("successCode","succeed");
             //将二次验证超时的session清除，否则第二次发送图片就会false
@@ -292,14 +291,14 @@ public class ServerHandler extends IoHandlerAdapter {
             //收到ERROR消息或者超时，暂停当前图片发送，清除当前缓存并发下一张
             if (ImagesCachePool.getImages(session.getId())!=null){
                 Images sendImg = ImagesCachePool.getImages(session.getId());
-                byte[] queueOutByte = util.queueOutByte(sendImg.getImgQueue(), sendImg.getSize());
-                byte[] subByte = util.subByte(queueOutByte, 4, 28);
-                String subStr = util.toStringHex(util.bytesToHexString(subByte));
-                Tags tags = new Tags();
-                tags.setGoodsId(subStr.substring(0,16));
-                tags.setMacAddress(subStr.substring(16));
-                tags.setType(1);
-                serverHandler.tagsService.updateTagOfGoodsId(tags);
+//                byte[] queueOutByte = util.queueOutByte(sendImg.getImgQueue(), sendImg.getSize());
+//                byte[] subByte = util.subByte(queueOutByte, 4, 28);
+//                String subStr = util.toStringHex(util.bytesToHexString(subByte));
+//                Tags tags = new Tags();
+//                tags.setGoodsId(subStr.substring(0,16));
+//                tags.setMacAddress(subStr.substring(16));
+//                tags.setType(1);
+//                serverHandler.tagsService.updateTagOfGoodsId(tags);
                 ImagesCachePool.removeImages(sendImg.getSessionID());
             }
             //拿到缓存队列的下一张图片并发送

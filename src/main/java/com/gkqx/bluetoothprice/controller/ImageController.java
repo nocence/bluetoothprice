@@ -293,7 +293,7 @@ public class ImageController {
     * @param sendAllWifi, images
     * @return com.gkqx.bluetoothprice.dto.Result
     */
-    @RequestMapping("sendAll")
+//    @RequestMapping("sendAll")
     @ResponseBody
     public Result sendAllImages(@RequestBody ImageToWifi[] sendAllWifi, Images images) throws IOException {
         System.out.println("群发请求");
@@ -357,8 +357,7 @@ public class ImageController {
     * @param sendAllWifi
     * @return com.gkqx.bluetoothprice.dto.Result
     */
-
-    @RequestMapping("checkAll")
+//    @RequestMapping("checkAll")
     @ResponseBody
     public Result checkAll(@RequestBody ImageToWifi[] sendAllWifi){
         Result res = new Result();
