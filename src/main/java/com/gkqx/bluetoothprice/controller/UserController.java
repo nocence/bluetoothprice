@@ -30,15 +30,17 @@ public class UserController {
     public Result userLogin(User user, HttpSession session){
         System.out.println("登陆请求进来");
         Result res = new Result();
-        if (user.getName()==null || user.getPassWord()==null){
-            res.setCode(ResultCommon.FAILED_CODE);
-        }
+        if (user.getName()==null || user.getPassWord()==null) res.setCode(ResultCommon.FAILED_CODE);
         if (user.getName()!=null && user.getPassWord()!=null){
             User queryOne = userService.queryOne(user);
-            if (queryOne.getName().equals(user.getName()) && queryOne.getPassWord().equals(user.getPassWord())){
-                session.setAttribute("loginUser",queryOne);
-                res.setCode(ResultCommon.SUCCESS_CODE);
-                res.setObj(queryOne);
+            if (queryOne!=null){
+                if (queryOne.getName().equals(user.getName()) && queryOne.getPassWord().equals(user.getPassWord())){
+                    session.setAttribute("loginUser",queryOne);
+                    res.setCode(ResultCommon.SUCCESS_CODE);
+                    res.setObj(queryOne);
+                }else{
+                    res.setCode(ResultCommon.FAILED_CODE);
+                }
             }else{
                 res.setCode(ResultCommon.FAILED_CODE);
             }
